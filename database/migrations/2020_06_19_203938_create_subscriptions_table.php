@@ -2,7 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Resources\ConditionallyLoadsAttributes;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class CreateSubscriptionsTable extends Migration
 {
@@ -14,14 +17,20 @@ class CreateSubscriptionsTable extends Migration
     public function up()
     {
         Schema::create('subscriptions', function (Blueprint $table) {
+            $now = Carbon::now();
             $table->id();
+            $table->unsignedInteger('user_id')->default(Auth::id());
             $table->string('subscription_name');
-            $table->double('price', 6, 2);
-            $table->string('category');
-            $table->text('description');
-            $table->date('first_date');
-            $table->bigInteger('period');
+            $table->double('price', 6, 2)->default('9.99');
+            $table->string('category')->nullable();
+            $table->text('description')->nullable();
+            $table->date('first_date')->default($now);
+            $table->string('period')->default('Monthly');
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
         });
     }
 
@@ -32,6 +41,8 @@ class CreateSubscriptionsTable extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('subscriptions');
+        Schema::enableForeignKeyConstraints();
     }
 }

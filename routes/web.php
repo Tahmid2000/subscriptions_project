@@ -23,3 +23,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/about', function () {
     return view('about');
 })->name('about');
+
+Route::get('subscriptions/create', 'SubscriptionController@create')->name('create');
+Route::post('/home', 'SubscriptionController@store');
