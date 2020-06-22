@@ -18,12 +18,11 @@
     
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <!-- Bootstrap core CSS -->
-    {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Material Design Bootstrap -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet"> --}}
     <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
-    
+    <style>
+        
+    </style>
+    @stack('css')
 </head>
 <body>
     <header id="header">
@@ -89,5 +88,8 @@
     <script src="assets/js/skel.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script></script>
+    @stack('js')
 </body>
 </html>

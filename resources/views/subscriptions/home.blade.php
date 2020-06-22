@@ -5,7 +5,7 @@
 			<section id="banner">
 				<h1>Your Subscriptions</h1>
 			</section>
-		<a href="{{route('create')}}" class="btn btn-dark text-white" style="text-decoration: none">Create new subscription</a>
+		<a href="{{route('create')}}" class="btn btn-dark text-white" style="text-decoration: none">Add a Subscription</a>
 			<div class="container mt-5 d-flex justify-content-center">
 				<div class="card text-white bg-danger mb-3" style="width: 30rem;">
 					<div class="card-header" style="font-size: 150%;">Service Name</div>
