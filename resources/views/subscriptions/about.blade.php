@@ -3,7 +3,7 @@
     
     <div class="subpage">
 		<!-- Header -->
-			<header id="header">
+			{{-- <header id="header">
 				<div class="inner">
 					<a href="index.html" class="logo">Theory</a>
 					<nav id="nav">
@@ -12,7 +12,7 @@
 					</nav>
 					<a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
 				</div>
-			</header>
+			</header> --}}
 
 		<!-- Three -->
 			<section id="three" class="wrapper">
@@ -50,4 +50,5 @@
 					</div>
 				</div>
 			</section>
+		</div>
 @endsection

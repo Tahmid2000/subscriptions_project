@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Subscription;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class SubscriptionController extends Controller
 {
@@ -29,7 +31,8 @@ class SubscriptionController extends Controller
      */
     public function create()
     {
-        return view('subscriptions.create');
+        $date = Carbon::now()->format('m-d-Y');
+        return view('subscriptions.create', compact('date'));
     }
 
     /**
@@ -40,9 +43,13 @@ class SubscriptionController extends Controller
      */
     public function store()
     {
-        $subscription = new Subscription(request(['subscription_name', 'price', 'first_date', 'period']));
-        $subscription->user_id = Auth::id();
-        $subscription->save();
+        $validator = $this->validateSubscription();
+        $subscription = Subscription::firstOrCreate([
+            'user_id' => Auth::id(),
+            'subscription_name' => request('subscription_name'),
+            'price' => request('price'),
+            'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
+        ]);
         return redirect(route('home'));
     }
 
@@ -89,5 +96,26 @@ class SubscriptionController extends Controller
     public function destroy(Subscription $subscription)
     {
         //
+    }
+
+    public function validateSubscription()
+    {
+        return request()->validate([
+            'subscription_name' => 'required|max:255',
+            'price' => 'required',
+            'first_date' => 'required|date_format:m-d-Y',
+            'period' => 'required'
+        ], $this->messages());
+    }
+
+    public function messages()
+    {
+        return [
+            'subscription_name.required' => 'A subscription is required.',
+            'price.required'  => 'A price is required.',
+            'first_date.required' => 'An initial date is required.',
+            'first_date.date_format' => "Inputted date doesn't match the format mm-dd-yyyy.",
+            'period.required' => 'A frequency is required.'
+        ];
     }
 }

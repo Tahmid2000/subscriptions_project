@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/about', function () {
-    return view('about');
+    return view('subscriptions.about');
 })->name('about');
 
 Route::get('subscriptions/create', 'SubscriptionController@create')->name('create');
