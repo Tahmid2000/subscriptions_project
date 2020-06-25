@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Subscription;
 use Carbon\Carbon;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -46,10 +47,12 @@ class SubscriptionController extends Controller
         $validator = $this->validateSubscription();
         $subscription = Subscription::firstOrCreate([
             'user_id' => Auth::id(),
-            'subscription_name' => request('subscription_name'),
+            'subscription_name' => strtolower(request('subscription_name')),
             'price' => request('price'),
             'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
+            'period' => request('period')
         ]);
+        request()->session()->flash('flash_message', 'Subscription added!');
         return redirect(route('home'));
     }
 
@@ -61,7 +64,6 @@ class SubscriptionController extends Controller
      */
     public function show(Subscription $subscription)
     {
-        //
     }
 
     /**
@@ -72,7 +74,7 @@ class SubscriptionController extends Controller
      */
     public function edit(Subscription $subscription)
     {
-        //
+        return view('subscriptions.edit', compact('subscription'));
     }
 
     /**
@@ -84,7 +86,19 @@ class SubscriptionController extends Controller
      */
     public function update(Request $request, Subscription $subscription)
     {
-        //
+        $validator = request()->validate([
+            'subscription_name' => 'required|max:255',
+            'price' => 'required',
+            'first_date' => 'required|date_format:m-d-Y',
+            'period' => 'required'
+        ]);
+        $subscription->update([
+            'price' => request('price'),
+            'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
+            'period' => request('period')
+        ]);
+        request()->session()->flash('flash_message', 'Subscription edited!');
+        return redirect(route('home'));
     }
 
     /**
@@ -95,13 +109,22 @@ class SubscriptionController extends Controller
      */
     public function destroy(Subscription $subscription)
     {
-        //
+        $subscription->delete();
+        return redirect(route('home'));
     }
 
     public function validateSubscription()
     {
         return request()->validate([
-            'subscription_name' => 'required|max:255',
+            'subscription_name' => [
+                'required', 'max:255',
+                function ($attribute, $value, $fail) {
+                    $subs = Subscription::where('user_id', Auth::id());
+                    if ($subs->where('subscription_name', $value)->first()) {
+                        $fail('You already have this subscription added.');
+                    }
+                }
+            ],
             'price' => 'required',
             'first_date' => 'required|date_format:m-d-Y',
             'period' => 'required'

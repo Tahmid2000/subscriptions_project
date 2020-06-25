@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -23,6 +25,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('subscriptions.home');
+        $subscriptions = Subscription::all()
+            ->where('user_id', Auth::id());
+        return view('subscriptions.home', compact('subscriptions'));
     }
 }
