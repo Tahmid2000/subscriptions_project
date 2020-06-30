@@ -50,11 +50,16 @@ class SubscriptionController extends Controller
             'subscription_name' => strtolower(request('subscription_name')),
             'price' => request('price'),
             'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
+            'next_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
             'period' => request('period')
         ]);
+        if ($subscription->first_date <= Carbon::now())
+            $this->updateNextDate($subscription);
+
         request()->session()->flash('flash_message', 'Subscription added!');
         return redirect(route('home'));
     }
+
 
     /**
      * Display the specified resource.
@@ -97,6 +102,9 @@ class SubscriptionController extends Controller
             'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
             'period' => request('period')
         ]);
+        if ($subscription->first_date <= Carbon::now())
+            $this->updateNextDate($subscription);
+
         request()->session()->flash('flash_message', 'Subscription edited!');
         return redirect(route('home'));
     }
@@ -109,10 +117,30 @@ class SubscriptionController extends Controller
      */
     public function destroy(Subscription $subscription)
     {
+        request()->session()->flash('flash_message', ucwords($subscription->subscription_name) . ' Subscription deleted.');
         $subscription->delete();
         return redirect(route('home'));
     }
 
+    public function updateNextDate($subscription)
+    {
+        $new_date = $subscription->addNextDate();
+        if ($new_date < Carbon::now()) {
+            while ($new_date < Carbon::now()) {
+                if ($subscription->period === 'Monthly')
+                    $new_date = $new_date->addMonthNoOverflow();
+                else if ($subscription->period === 'Yearly')
+                    $new_date = $new_date->addYearNoOverflow();
+                else if ($subscription->period === 'Weekly')
+                    $new_date = $new_date->addWeek();
+                else if ($subscription->period === 'Quarterly')
+                    $new_date = $new_date->addMonthNoOverflow(3);
+            }
+        }
+        $subscription->update([
+            'next_date' => $new_date
+        ]);
+    }
     public function validateSubscription()
     {
         return request()->validate([

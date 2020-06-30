@@ -30,7 +30,6 @@
                                         </div>
                                         <input type="price" class="form-control @error('price') is-invalid @enderror" id="price" value="9.99" name="price" onfocus="this.value=''">
                                         @error('price')
-                                        <span class="invalid-feedback" role="alert">
                                             <p style="color: red; margin-bottom: -15px;">{{ $message }}</p>
                                         </span>
                                         @enderror
@@ -75,17 +74,17 @@
             return "1234567890.".indexOf(String.fromCharCode(e.which)) >= 0;
         }
         document.querySelector("#first_date").onkeypress = function(e) {
-            return "1234567890".indexOf(String.fromCharCode(e.which)) >= 0;
+            return "1234567890-".indexOf(String.fromCharCode(e.which)) >= 0;
         }
-        document.querySelector("#first_date").onkeypress = function(e){
-            /* if(e.which == 8){
+        /* document.querySelector("#first_date").onkeypress = function(e){
+            if(e.which == 8){
                 
-            }  */
+            } 
             let length = document.querySelector("#first_date").value.replace("-","").length;
             if (length == 2)
                 document.querySelector("#first_date").value += '-';
             else if (length == 4)
                 document.querySelector("#first_date").value += '-';
-        }
+        } */
     </script>
 @endpush

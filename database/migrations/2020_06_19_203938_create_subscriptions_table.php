@@ -25,6 +25,7 @@ class CreateSubscriptionsTable extends Migration
             $table->string('category')->nullable();
             $table->text('description')->nullable();
             $table->date('first_date')->default($now);
+            $table->date('next_date')->default($now);
             $table->string('period')->default('Monthly');
             $table->timestamps();
 
