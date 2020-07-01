@@ -51,7 +51,8 @@ class SubscriptionController extends Controller
             'price' => request('price'),
             'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
             'next_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
-            'period' => request('period')
+            'period' => request('period'),
+            'category' => request('category')
         ]);
         if ($subscription->first_date <= Carbon::now())
             $this->updateNextDate($subscription);
@@ -100,7 +101,8 @@ class SubscriptionController extends Controller
         $subscription->update([
             'price' => request('price'),
             'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
-            'period' => request('period')
+            'period' => request('period'),
+            'category' => request('category')
         ]);
         if ($subscription->first_date <= Carbon::now())
             $this->updateNextDate($subscription);

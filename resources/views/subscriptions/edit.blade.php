@@ -57,6 +57,23 @@
                                 </span>
                             @enderror
                         </div>
+                        <div class="form-group">
+                            <label class="my-1 mr-2" for="period">Category (Optional)</label>
+                            <select name="category" class="form-control @error('category') is-invalid @enderror" >
+                                <option value="none" {{($subscription->category == 'none') ? 'selected' : ''}}>Select One</option>
+                                <option value="entertainment" {{($subscription->category == 'entertainment') ? 'selected' : ''}}>Entertainment</option>
+                                <option value="services" {{($subscription->category == 'services') ? 'selected' : ''}}>Services</option>
+                                <option value="work" {{($subscription->category == 'work') ? 'selected' : ''}}>Work</option>
+                                <option value="personal" {{($subscription->category == 'personal') ? 'selected' : ''}}>Personal</option>
+                                <option value="health" {{($subscription->category == 'health') ? 'selected' : ''}}>Health</option>
+                                <option value="other" {{($subscription->category == 'other') ? 'selected' : ''}}>Other</option>
+                            </select>
+                            @error('category')
+                                <span class="invalid-feedback" role="alert">
+                                    <p style="color: red; margin-bottom: -15px;">{{ $message }}</p>
+                                </span>
+                            @enderror
+                        </div>
                         <button type="submit" class="btn btn-dark text-white float-right mb-5" style="width: 9rem;">UPDATE <i class="fas fa-edit"></i></button>
                     </form>
                 </div>

@@ -59,6 +59,22 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="form-group">
+                                    <label class="my-1 mr-2" for="period">Category (Optional)</label>
+                                    <select name="category" class="form-control @error('category') is-invalid @enderror" >
+                                        <option value="none">Select One</option>
+                                        <option value="entertainment">Entertainment</option>
+                                        <option value="services">Services</option>
+                                        <option value="work">Work</option>
+                                        <option value="personal">Personal</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    @error('category')
+                                        <span class="invalid-feedback" role="alert">
+                                            <p style="color: red; margin-bottom: -15px;">{{ $message }}</p>
+                                        </span>
+                                    @enderror
+                                </div>
                             <button type="submit" class="btn btn-dark text-white float-right mb-5" style="width: 7rem;">Add <i class="fas fa-plus"></i></button>
                         </form>
                     </div>

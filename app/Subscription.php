@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
-    protected $fillable = ['subscription_name', 'price', 'first_date', 'next_date', 'period', 'user_id'];
+    protected $fillable = ['subscription_name', 'price', 'first_date', 'next_date', 'period', 'user_id', 'category'];
     public function member()
     {
         return $this->belongsTo(User::class, 'user_id');

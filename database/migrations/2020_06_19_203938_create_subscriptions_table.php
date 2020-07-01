@@ -23,7 +23,6 @@ class CreateSubscriptionsTable extends Migration
             $table->string('subscription_name');
             $table->double('price', 6, 2)->default('9.99');
             $table->string('category')->nullable();
-            $table->text('description')->nullable();
             $table->date('first_date')->default($now);
             $table->date('next_date')->default($now);
             $table->string('period')->default('Monthly');
