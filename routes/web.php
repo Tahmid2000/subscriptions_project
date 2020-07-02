@@ -29,3 +29,5 @@ Route::post('/home', 'SubscriptionController@store');
 Route::get('/subscriptions/{subscription}/edit', 'SubscriptionController@edit')->name('edit');
 Route::put('/subscriptions/{subscription}', 'SubscriptionController@update')->name('update');
 Route::delete('/subscriptions/{subscription}', 'SubscriptionController@destroy')->name('delete');
+
+Route::get('/subscriptions/stats', 'StatisticsController@index')->name('stats');

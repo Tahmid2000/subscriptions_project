@@ -44,10 +44,10 @@
 		@foreach($subscriptions->chunk(4) as $chunk)
 			<div class="row px-5">
 				@foreach ($chunk as $sub)
-					<div class="col-lg-3">
+					<div class="col-md-3">
 						<div class="container">
 							<div class="d-flex justify-content-center">
-								<div class="card mb-3 animated pulse" style="width: 20rem;">
+								<div class="card mb-3 animated zoomIn" style="width: 20rem;">
 									<div class="card-body">
 										<div class="d-flex justify-content-center">
 											<h3 class="card-title mb-3">{{ucwords($sub->subscription_name)}}</h3>
@@ -56,7 +56,7 @@
 											<h5 class="card-subtitle text-muted">Due: {{date("m-d-Y", strtotime($sub->next_date))}}</h5>
 										</div>
 										<div class="d-flex justify-content-center mb-2">
-											<h5 class="card-subtitle text-muted mt-1">Price: {{$sub->price}}</h5>
+											<h5 class="card-subtitle text-muted mt-1">Price: {{number_format($sub->price,2)}}</h5>
 										</div>
 										<div class="d-flex justify-content-center">
 											<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">

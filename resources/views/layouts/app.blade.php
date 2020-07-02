@@ -50,6 +50,11 @@
             </li>
             <li class="nav-item">
                 @auth
+                    <a class="nav-link" href="{{ route('stats') }}">Your Stats</a>
+                @endauth
+            </li>
+            <li class="nav-item">
+                @auth
                 @else 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('register') }}">Register</a>
@@ -88,7 +93,7 @@
         <div class="inner">
             <div class="flex">
                 <div class="copyright">
-                    &copy; Tahmid. Images: <a href="https://unsplash.com">Unsplash</a>.
+                &copy; {{Carbon\Carbon::now()->year}} Tahmid. Images: <a href="https://unsplash.com">Unsplash</a>.
                 </div>
                 <ul class="icons">
                     <li><a href="https://github.com/Tahmid2000"><span class="label">Github</span></a></li>
