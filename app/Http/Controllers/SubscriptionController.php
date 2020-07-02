@@ -94,7 +94,7 @@ class SubscriptionController extends Controller
     {
         $validator = request()->validate([
             'subscription_name' => 'required|max:255',
-            'price' => 'required',
+            'price' => 'required:numeric',
             'first_date' => 'required|date_format:m-d-Y',
             'period' => 'required'
         ]);
@@ -155,7 +155,7 @@ class SubscriptionController extends Controller
                     }
                 }
             ],
-            'price' => 'required',
+            'price' => 'required:numeric',
             'first_date' => 'required|date_format:m-d-Y',
             'period' => 'required'
         ], $this->messages());

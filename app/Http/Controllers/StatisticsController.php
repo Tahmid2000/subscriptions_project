@@ -146,18 +146,18 @@ class StatisticsController extends Controller
     public function categoryGraph(Collection $raws)
     {
         $borderColors = [
-            "rgba(255, 99, 132, 1.0)",
-            "rgba(22,160,133, 1.0)",
-            "rgba(153, 102, 255, 1.0)",
-            "rgba(51,105,232, 1.0)",
-            "rgba(244,67,54, 1.0)",
+            "rgba(233,30,99, 1.0)",
+            "rgba(255, 159, 64, 1.0)",
+            "rgba(119, 197, 57, 1.0)",
+            "rgba(205,220,57, 1.0)",
+            "rgba(32, 199, 190, 1.0)",
         ];
         $fillColors = [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(22,160,133, 0.2)",
-            "rgba(153, 102, 255, .2)",
-            "rgba(51,105,232, 0.2)",
-            "rgba(244,67,54, 0.2)",
+            "rgba(233,30,99, .2)",
+            "rgba(255, 159, 64, .2)",
+            "rgba(119, 197, 57, .2)",
+            "rgba(205,220,57, .2)",
+            "rgba(32, 199, 190, .2)",
         ];
         $data = [
             'entertainment' => 0,
@@ -169,6 +169,8 @@ class StatisticsController extends Controller
         foreach ($raws as $raw) {
             $period = $raw['period'];
             $price = $raw['price'];
+            if ($raw['category'] == 'Select One')
+                $raw['category'] = 'other';
             if ($period === 'Monthly')
                 $data[$raw['category']] += $price * 12 * 1.0825;
             else if ($period === 'Weekly')
