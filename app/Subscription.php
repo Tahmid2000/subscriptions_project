@@ -5,7 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
-class Subscription extends Model
+class Subscription extends Model implements \Acaronlex\LaravelCalendar\Event
 {
     protected $fillable = ['subscription_name', 'price', 'first_date', 'next_date', 'period', 'user_id', 'category'];
     public function member()
@@ -39,5 +39,40 @@ class Subscription extends Model
             return Carbon::create($this->next_date)->addMonthNoOverflow(3);
         }
         return NIL;
+    }
+
+    public function getTitle()
+    {
+        return $this->subscription_name;
+    }
+
+    /**
+     * Is it an all day event?
+     *
+     * @return bool
+     */
+    public function isAllDay()
+    {
+        return true;
+    }
+
+    /**
+     * Get the start time
+     *
+     * @return DateTime
+     */
+    public function getStart()
+    {
+        return $this->next_date;
+    }
+
+    /**
+     * Get the end time
+     *
+     * @return DateTime
+     */
+    public function getEnd()
+    {
+        return $this->next_date;
     }
 }

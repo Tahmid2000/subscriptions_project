@@ -29,7 +29,7 @@ class HomeController extends Controller
         $subscriptions = Subscription::all()
             ->where('user_id', Auth::id());
         foreach ($subscriptions as $sub) {
-            if ($sub->next_date < Carbon::now()) {
+            if ($sub->next_date < Carbon::now()->addDays(-1)) {
                 $new_date = $sub->addNextDate2();
                 $sub->update([
                     'next_date' => $new_date

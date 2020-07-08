@@ -132,7 +132,7 @@ class StatisticsController extends Controller
 
         $costMonth = new StatisticsChart;
         $costMonth->labels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
-        $costMonth->dataset('Cost/Month', 'bar', $months)
+        $costMonth->dataset('Expense/Month', 'bar', $months)
             ->color($borderColors)
             ->backgroundcolor($fillColors);
         return $costMonth;
@@ -148,16 +148,16 @@ class StatisticsController extends Controller
         $borderColors = [
             "rgba(233,30,99, 1.0)",
             "rgba(255, 159, 64, 1.0)",
-            "rgba(119, 197, 57, 1.0)",
             "rgba(205,220,57, 1.0)",
             "rgba(32, 199, 190, 1.0)",
+            "rgba(119, 197, 57, 1.0)",
         ];
         $fillColors = [
             "rgba(233,30,99, .2)",
             "rgba(255, 159, 64, .2)",
-            "rgba(119, 197, 57, .2)",
             "rgba(205,220,57, .2)",
             "rgba(32, 199, 190, .2)",
+            "rgba(119, 197, 57, .2)",
         ];
         $data = [
             'entertainment' => 0,
@@ -186,7 +186,7 @@ class StatisticsController extends Controller
         $usersChart = new StatisticsChart;
         $usersChart->minimalist(true);
         $usersChart->labels(['Entertainment', 'Services', 'Work', 'Personal', 'Other']);
-        $usersChart->dataset('Cost/Category', 'doughnut', [$data['entertainment'], $data['services'], $data['work'], $data['personal'], $data['other']])
+        $usersChart->dataset('Expense/Category', 'doughnut', [$data['entertainment'], $data['services'], $data['work'], $data['personal'], $data['other']])
             ->color($borderColors)
             ->backgroundcolor($fillColors);
         return $usersChart;

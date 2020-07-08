@@ -24,7 +24,7 @@
 <div class="row mx-5 mt-4">
     <div class="col-md-6">
         <div class="card" style="width: 100%;">
-            <div class="card-header">Cost/Month - {{Carbon\Carbon::now()->year}}</div>
+            <div class="card-header">Expense/Month - {{Carbon\Carbon::now()->year}}</div>
             <div class="card-body">
                 {{$costMonth->container()}}
             </div>
@@ -32,7 +32,7 @@
     </div>
     <div class="col-md-6">
         <div class="card" style="width: 100%;">
-            <div class="card-header">Cost/Category - {{Carbon\Carbon::now()->year}}</div>
+            <div class="card-header">Expense/Category</div>
             <div class="card-body">
                 {{$categoryChart->container()}}
             </div>

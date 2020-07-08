@@ -31,3 +31,4 @@ Route::put('/subscriptions/{subscription}', 'SubscriptionController@update')->na
 Route::delete('/subscriptions/{subscription}', 'SubscriptionController@destroy')->name('delete');
 
 Route::get('/subscriptions/stats', 'StatisticsController@index')->name('stats');
+Route::get('/subscriptions/calendar', 'SubscriptionController@thecalendar')->name('calendar');

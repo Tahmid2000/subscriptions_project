@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Acaronlex\LaravelCalendar\Calendar;
+
 use App\Subscription;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+/* use Acaronlex\LaravelCalendar\Facades\Calendar; */
 
 class SubscriptionController extends Controller
 {
@@ -54,9 +57,12 @@ class SubscriptionController extends Controller
             'period' => request('period'),
             'category' => request('category')
         ]);
-        if ($subscription->first_date <= Carbon::now())
+        if ($subscription->first_date < Carbon::now()->addDays(-1))
             $this->updateNextDate($subscription);
-
+        else
+            $subscription->update([
+                'next_date' => $subscription->first_date
+            ]);
         request()->session()->flash('flash_message', 'Subscription added!');
         return redirect(route('home'));
     }
@@ -104,9 +110,12 @@ class SubscriptionController extends Controller
             'period' => request('period'),
             'category' => request('category')
         ]);
-        if ($subscription->first_date <= Carbon::now())
+        if ($subscription->first_date < Carbon::now()->addDays(-1))
             $this->updateNextDate($subscription);
-
+        else
+            $subscription->update([
+                'next_date' => $subscription->first_date
+            ]);
         request()->session()->flash('flash_message', 'Subscription edited!');
         return redirect(route('home'));
     }
@@ -124,11 +133,73 @@ class SubscriptionController extends Controller
         return redirect(route('home'));
     }
 
+    public function thecalendar()
+    {
+        $events = Subscription::all()->where('user_id', Auth::user()->id);
+        $event_list = [];
+        foreach ($events as $event) {
+            $event_list[] = Calendar::event(
+                ucwords($event->subscription_name),
+                true,
+                Carbon::create($event->next_date),
+                Carbon::create($event->next_date),
+            );
+            if ($event->period === 'Monthly') {
+                $i = 1;
+                while ($i < 60) {
+                    $event_list[] = Calendar::event(
+                        ucwords($event->subscription_name),
+                        true,
+                        Carbon::create($event->next_date)->addMonthsNoOverflow($i),
+                        Carbon::create($event->next_date)->addMonthsNoOverflow($i),
+                    );
+                    $i += 1;
+                }
+            } else if ($event->period === 'Yearly') {
+                $i = 1;
+                while ($i < 5) {
+                    $event_list[] = Calendar::event(
+                        ucwords($event->subscription_name),
+                        true,
+                        Carbon::create($event->next_date)->addYearsNoOverflow($i),
+                        Carbon::create($event->next_date)->addYearsNoOverflow($i),
+                    );
+                    $i += 1;
+                }
+            } else if ($event->period === 'Weekly') {
+                $i = 1;
+                while ($i < 260) {
+                    $event_list[] = Calendar::event(
+                        ucwords($event->subscription_name),
+                        true,
+                        Carbon::create($event->next_date)->addWeeks($i),
+                        Carbon::create($event->next_date)->addWeeks($i),
+                    );
+                    $i += 1;
+                }
+            } else if ($event->period === 'Quarterly') {
+                $i = 3;
+                while ($i < 15) {
+                    $event_list[] = Calendar::event(
+                        ucwords($event->subscription_name),
+                        true,
+                        Carbon::create($event->next_date)->addMonthsNoOverflow($i),
+                        Carbon::create($event->next_date)->addMonthsNoOverflow($i),
+                    );
+                    $i += 3;
+                }
+            }
+        }
+        $calendar = new Calendar();
+        $calendar->addEvents($event_list);
+        return view('subscriptions.calendar', compact('calendar'));
+    }
+
     public function updateNextDate($subscription)
     {
         $new_date = $subscription->addNextDate();
-        if ($new_date < Carbon::now()) {
-            while ($new_date < Carbon::now()) {
+        if ($new_date < Carbon::now()->addDays(-1)) {
+            while ($new_date < Carbon::now()->addDays(-1)) {
                 if ($subscription->period === 'Monthly')
                     $new_date = $new_date->addMonthNoOverflow();
                 else if ($subscription->period === 'Yearly')
