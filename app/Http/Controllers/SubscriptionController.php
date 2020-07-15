@@ -35,7 +35,7 @@ class SubscriptionController extends Controller
      */
     public function create()
     {
-        $date = Carbon::now()->format('m-d-Y');
+        $date = Carbon::now()->format('m/d/Y');
         return view('subscriptions.create', compact('date'));
     }
 
@@ -52,8 +52,8 @@ class SubscriptionController extends Controller
             'user_id' => Auth::id(),
             'subscription_name' => strtolower(request('subscription_name')),
             'price' => request('price'),
-            'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
-            'next_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
+            'first_date' => Carbon::create(request('first_date')),
+            'next_date' => Carbon::create(request('first_date')),
             'period' => request('period'),
             'category' => request('category')
         ]);
@@ -101,12 +101,12 @@ class SubscriptionController extends Controller
         $validator = request()->validate([
             'subscription_name' => 'required|max:255',
             'price' => 'required:numeric',
-            'first_date' => 'required|date_format:m-d-Y',
+            'first_date' => 'required|date',
             'period' => 'required'
         ]);
         $subscription->update([
             'price' => request('price'),
-            'first_date' => Carbon::createFromFormat('m-d-Y', request('first_date')),
+            'first_date' => Carbon::create(request('first_date')),
             'period' => request('period'),
             'category' => request('category')
         ]);
@@ -227,7 +227,7 @@ class SubscriptionController extends Controller
                 }
             ],
             'price' => 'required:numeric',
-            'first_date' => 'required|date_format:m-d-Y',
+            'first_date' => 'required|date',
             'period' => 'required'
         ], $this->messages());
     }

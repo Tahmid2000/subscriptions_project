@@ -56,7 +56,8 @@ class HomeController extends Controller
                 }
             }
         }
+        $date = Carbon::now()->format('m/d/Y');
         $sorted = request('sort');
-        return view('subscriptions.home', compact('subscriptions', 'sorted'));
+        return view('subscriptions.home', compact('subscriptions', 'sorted', 'date'));
     }
 }

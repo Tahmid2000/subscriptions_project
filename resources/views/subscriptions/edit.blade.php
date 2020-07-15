@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('content')
+@push('css')
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css"
+    integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
+@endpush
 <!-- Banner -->
 <section id="banner">
     <h1>Edit Subscription</h1>
@@ -7,7 +12,7 @@
 
 <div class="container pt-5 d-flex justify-content-center">
     <div style="width: 20rem;">
-        <form method="POST" action="{{route('update', $subscription)}}">
+        <form method="POST" action="{{route('update', $subscription)}}" id='editFomr'>
             @csrf
             @method('PUT')
             <div class="form-group">
@@ -25,7 +30,7 @@
                 <label class="my-1 mr-2" for="price">Price</label>
                 <div class="input-group mb-2">
                     <div class="input-group-prepend">
-                        <div class="input-group-text">$</div>
+                        <div class="input-group-text"><i class="fas fa-dollar-sign"></i></div>
                     </div>
                     <input type="price" class="form-control @error('price') is-invalid @enderror" id="price"
                         value="{{old('price',$subscription->price)}}" name="price">
@@ -39,9 +44,15 @@
             </div>
             <div class="form-group">
                 <label class="my-1 mr-2" for="due_dates">First Due Date</label>
-                <input type="name" name="first_date" class="form-control @error('first_date') is-invalid @enderror"
-                    id="first_date" placeholder="dd-mm-yyyy"
-                    value="{{old('first_date',date("m-d-Y", strtotime($subscription->first_date)))}}">
+                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                    <input type="text" name="first_date"
+                        class="form-control datetimepicker-input @error('first_date') is-invalid @enderror"
+                        data-target="#datetimepicker1"
+                        value="{{ old('first_date', date("m-d-Y", strtotime($subscription->first_date))) }}" />
+                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
                 @error('first_date')
                 <span class="invalid-feedback" role="alert">
                     <p style="color: red; margin-bottom: -15px;">{{ $message }}</p>
@@ -104,6 +115,10 @@
 @endsection
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
+    integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
+    integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
 <script>
     document.querySelector("#price").onkeypress = function(e) {
             return "1234567890.".indexOf(String.fromCharCode(e.which)) >= 0;
