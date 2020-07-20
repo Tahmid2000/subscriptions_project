@@ -20,6 +20,34 @@
         body {
             font-family: 'Helvetica';
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #wrap {
+            min-height: 100%;
+        }
+
+        #main {
+            padding-bottom: 50px;
+        }
+
+        footer {
+            position: relative;
+            margin-top: -50px;
+            height: 100px;
+            clear: both;
+        }
+
+        body:before {
+            content: "";
+            height: 100%;
+            float: left;
+            width: 0;
+            margin-top: -32767px;
+        }
     </style>
     @stack('css')
 </head>
@@ -53,7 +81,7 @@
                         @else
                     <li class="nav-item">
                         @endif
-                        <a class="nav-link waves-effect" href="{{route('stats')}}">Your Stats</a>
+                        <a class="nav-link waves-effect" href="{{route('stats')}}">Statistics</a>
                         <span class="sr-only">(current)</span>
                     </li>
                     @if(Route::current()->getName() == 'calendar')
@@ -68,8 +96,8 @@
 
                 <ul class="navbar-nav nav-flex-icons">
                     <li class="nav-item">
-                        <a href="{{route('logout')}}" class="nav-link border border-light rounded waves-effect" onclick="event.preventDefault();
-                                                document.getElementById('logout-form').submit();">
+                        <a href="{{route('logout')}}" class="nav-link border border-light rounded waves-effect"
+                            onclick="logoutWarning()">
                             {{ __('Logout') }} <i class="fas fa-sign-out-alt"></i>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
@@ -105,10 +133,12 @@
             </div>
         </div>
     </nav>
+    <div id="wrap">
+        <div id="main">@yield('content')</div>
+    </div>
 
-    @yield('content')
 
-    <footer class="page-footer text-center font-small danger-color-dark darken-2 mt-4 wow fadeIn">
+    <footer class="page-footer text-center font-small mt-4 wow fadeIn" style="background-color: #f44336" id="footer">
         <hr class="my-4">
         <div class="pb-4">
             <a href="https://github.com/Tahmid2000" target="_blank">
@@ -133,6 +163,33 @@
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+    <script>
+        function logoutWarning(){
+            event.preventDefault();
+            const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+            confirmButton: 'btn btn-danger z-depth-0',
+            cancelButton: 'btn btn-success z-depth-0'
+            },
+            buttonsStyling: false
+            })
+            
+            swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: `You want to logout!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Logout',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+            }).then((result) => {
+            if (result.value) {
+                document.getElementById('logout-form').submit();
+            }
+            })
+            
+        }
     </script>
     @stack('js')
 </body>

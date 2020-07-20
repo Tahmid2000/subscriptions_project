@@ -5,6 +5,7 @@
 	html,
 	body {
 		overflow-x: hidden;
+		padding-right: 0 !important;
 	}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
@@ -27,7 +28,7 @@
 background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 100px;">
 
 		<!-- Content -->
-		<div class="card-body text-white text-center py-5 px-5 my-5">
+		<div class="card-body text-white text-center py-5 px-5 my-5" style="font-size: 120%;">
 
 			<h1 class="mb-4">
 				<strong>Your Subscriptions</strong>
@@ -39,18 +40,16 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 				<strong>You can see the upcoming pay dates and prices of all your subscriptions. You can also sort by
 					different categories to get a view of the subscriptions in the way you prefer.</strong>
 			</p>
-			<p class="mb-4">
-				<strong>More feautures coming soon!</strong>
-			</p>
 		</div>
 		<!-- Content -->
 	</section>
 </div>
-<div class="d-flex justify-content-end px-5 mb-3">
+<div class="d-flex justify-content-center my-3">
 	<form action="{{route('home')}}" method='GET'>
 		{{-- <label for="sort">Sort By</label> --}}
-		<select name="sort" id="" onchange="this.form.submit();" class="selectpicker">
-			<option value="order" {{ ($sorted === 'order') ? 'selected' : ''}}>Order Added</option>
+		<select name="sort" id="" onchange="this.form.submit();" class="selectpicker"
+			data-style="background-color: blue;" style="background-color: #f44336" 3>
+			<option value=" order" {{ ($sorted === 'order') ? 'selected' : ''}}>Order Added</option>
 			<option value="upcoming" {{ ($sorted === 'upcoming') ? 'selected' : ''}}>Upcoming Payment
 			</option>
 			<option value="most_expensive" {{ ($sorted === 'most_expensive') ? 'selected' : ''}}>Most Expensive</option>
@@ -64,22 +63,29 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 				<option value="personal" {{ ($sorted === 'personal') ? 'selected' : ''}}>Personal</option>
 				<option value="other" {{ ($sorted === 'other') ? 'selected' : ''}}>Other</option>
 			</optgroup>
-
 		</select>
 	</form>
 </div>
 @if ($subscriptions)
-@foreach($subscriptions->chunk(4) as $chunk)
 <div class="row px-5">
-	@foreach ($chunk as $sub)
+	@php
+	$index = 1;
+	@endphp
+	@foreach ($subscriptions as $sub)
 	<div class="col-lg-3 col-md-4">
 		<div class="container">
 			<div class="d-flex justify-content-center">
-				<div class="card mb-3 animated zoomIn" style="width: 25rem;">
+				<div class="card mb-3 animated zoomIn" style="width: 24rem; /* min-height: 15rem; */">
 					<div class="card-body">
-						<div class="d-flex justify-content-center">
-							<h3 class="card-title mb-3" style="text-align: center; font-size: 200%; overflow: hidden;">
-								{{ucwords($sub->subscription_name)}}
+						<div class="d-flex justify-content-center mb-1">
+
+							<div class="d-flex justify-content-center">
+								<h3 class="card-title mb-3"
+									style="text-align: center; font-size: 200%; overflow: hidden;">
+									{{ucwords($sub->subscription_name)}} <img
+										src="https://logo.clearbit.com/{{str_replace(' ', '',$sub->subscription_name)}}.com"
+										width="35" height="35" onerror="this.remove();">
+							</div>
 							</h3>
 						</div>
 						<div class="d-flex justify-content-center">
@@ -110,9 +116,19 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 						</div>
 						<div class="d-flex justify-content-center">
 							<div class="btn-group" role="group" aria-label="Basic example">
-								<button type="button" class="btn btn-primary mr-4"
+								@php
+								$firstDate = date("m/d/Y", strtotime($sub->first_date));
+								$nextDate = date("m/d/Y", strtotime($sub->next_date));
+								@endphp
+								<button type="button" class="btn btn-warning mr-3"
 									style="padding: .375rem .75rem; width: 3rem; text-align: center"
-									onclick="editForm({{$sub->id}})">
+									onclick="viewSub('{{ucwords($sub->subscription_name)}}', '{{$sub->price}}', '{{$firstDate}}', '{{$nextDate}}', '{{$sub->period}}', '{{ucwords($sub->category)}}')"
+									title="View Details">
+									<i class="fas fa-eye" style="color: black;"></i>
+								</button>
+								<button type="button" class="btn btn-primary mr-3"
+									style="padding: .375rem .75rem; width: 3rem; text-align: center"
+									onclick="editForm({{$sub->id}})" title="Edit">
 									<i class="fas fa-edit" style="color: black;"></i>
 								</button>
 								<div class="edit-form-{{$sub->id}}" style="display: none;">
@@ -196,7 +212,7 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 
 									</form>
 								</div>
-								<button type="button" class="btn btn-danger"
+								<button type="button" class="btn btn-danger" title="Delete"
 									onclick="deleteSub({{$sub->id}}, '{{strval(ucwords($sub->subscription_name))}}');"
 									style="padding:.375rem .75rem; border-radius:.125rem; width:3rem;">
 									<i class="fas fa-trash-alt" style="color: black;"></i>
@@ -206,22 +222,35 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 									<input type="hidden" name="_method" value="DELETE">
 									@csrf
 								</form>
-
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	@php
+	$threeCols = ($index % 3) == 0;
+	$fourCols = ($index % 4) == 0;
+	@endphp
+	@if ($threeCols && $fourCols)
+	<div class="clearfix visible-lg visible-md"></div>
+	@elseif ($fourCols)
+	{{-- After 4 cols --}}
+	<div class="clearfix visible-lg"></div>
+	@elseif ($threeCols)
+	{{-- After 3 cols --}}
+	<div class="clearfix visible-md"></div>
+	@endif
+	@php
+	$index++;
+	@endphp
 	@endforeach
 </div>
-@endforeach
-
 @else
 You have no subscriptions, add one!
 @endif
+
 <div class="d-flex justify-content-center">
 	<div class="btn btn-dark" onclick="addForm()">Add <i class="fas fa-plus"></i></div>
 </div>
@@ -235,8 +264,8 @@ You have no subscriptions, add one!
 	function deleteSub(id, subname){
 		const swalWithBootstrapButtons = Swal.mixin({
 			customClass: {
-			confirmButton: 'btn btn-danger',
-			cancelButton: 'btn btn-success'
+			confirmButton: 'btn btn-danger z-depth-0',
+			cancelButton: 'btn btn-success z-depth-0'
 			},
 			buttonsStyling: false
 			})
@@ -316,8 +345,8 @@ You have no subscriptions, add one!
 		</form>`;
 		const swalWithBootstrapButtons = Swal.mixin({
 		customClass: {
-		confirmButton: 'btn btn-success',
-		cancelButton: 'btn btn-danger'
+		confirmButton: 'btn btn-success z-depth-0',
+		cancelButton: 'btn btn-danger z-depth-0'
 		},
 		buttonsStyling: false
 		})
@@ -385,11 +414,10 @@ You have no subscriptions, add one!
 	}
 
 	function editForm(id){
-		console.log(document.getElementById(`editForm-${id}`));
 		const swalWithBootstrapButtons = Swal.mixin({
 		customClass: {
-		confirmButton: 'btn btn-success',
-		cancelButton: 'btn btn-danger'
+		confirmButton: 'btn btn-success z-depth-0',
+		cancelButton: 'btn btn-danger z-depth-0'
 		},
 		buttonsStyling: false
 		})
@@ -449,6 +477,34 @@ You have no subscriptions, add one!
 		})
 	}
 
+	function viewSub(name, price, firstDate, nextDate, frequency, category){
+		const swalWithBootstrapButtons = Swal.mixin({
+		customClass: {
+		confirmButton: 'btn btn-primary z-depth-0',
+		},
+		buttonsStyling: false
+		})
+		
+		swalWithBootstrapButtons.fire({
+		title: `<strong>${name}</strong>`,
+		icon: 'info',
+		html:
+		'<b>Price: </b>$' + price + '<br>' +
+		'<b>First Date: </b>' +firstDate + '<br>' +
+		'<b>Next Date: </b>' +nextDate + '<br>' +
+		'<b>Frequency: </b>' +frequency + '<br>' +
+		'<b>Category: </b>' +category,
+		showCloseButton: true,
+		focusConfirm: false,
+		confirmButtonText:
+		'OK',
+		confirmButtonAriaLabel: 'Thumbs up, great!',
+		})
+	}
+
+	function checkURL(url) {
+		return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+	}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
 	integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>

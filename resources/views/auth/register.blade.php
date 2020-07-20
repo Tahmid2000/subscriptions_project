@@ -1,89 +1,89 @@
 @extends('layouts.app')
 
 @section('content')
-<div id="app">
-    <div class="top-right links">
-            @auth
-                <a href="{{ url('/home') }}">Home</a>
-            @else
-                <a href="{{ route('login') }}">Login</a>
-
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}">Register</a>
-                @endif
-            @endauth
-    </div>
-</div>
-<div class="container m-t-md">
+<div class="container m-t-md" style="margin-top: 150px;">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                <h5 class="card-header white-text text-center py-4" style="background-color: #f44336">
+                    <strong>{{ __('Register') }}</strong>
+                </h5>
+
+                <div class="card-body px-lg-5 pt-0">
+                    <form class="text-center" style="color: #757575;" method="POST" action="{{ route('register') }}">
                         @csrf
+                        <div class="md-form">
+                            <input type="text" id="name" class="form-control @error('name') is-invalid @enderror"
+                                name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                            <label for="materialLoginFormName">{{ __('Name') }}</label>
+                            @error('name')
+                            <span class="invalid-feedback" role="alert" style="color: red;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
 
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+                        <div class="md-form">
+                            <input type="email" id="materialLoginFormEmail"
+                                class="form-control @error('email') is-invalid @enderror" name="email"
+                                value="{{ old('email') }}" required autocomplete="email">
+                            <label for="materialLoginFormEmail">{{ __('E-Mail Address') }}</label>
+                            @error('email')
+                            <span class="invalid-feedback" role="alert" style="color: red;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
 
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                        <!-- Password -->
+                        <div class="md-form">
+                            <input type="password" id="materialLoginFormPassword"
+                                class="form-control @error('password') is-invalid @enderror" name="password" required
+                                autocomplete="current-password">
+                            <label for="materialLoginFormPassword">{{ __('Password') }}</label>
+                            @error('password')
+                            <span class="invalid-feedback" role="alert" style="color: red;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                        <div class="md-form">
+                            <input type="password" id="materialLoginFormConfirmPassword"
+                                class="form-control @error('password') is-invalid @enderror"
+                                name="password_confirmation" required autocomplete="new-password">
+                            <label for="materialLoginFormConfirmPassword">{{ __('Confirm Password') }}</label>
+                            @error('password')
+                            <span class="invalid-feedback" role="alert" style="color: red;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
 
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                        <!-- Sign in button -->
+                        <div class="d-flex justify-content-center">
+                            <div class="form-group row mb-0">
+                                <div class="">
+                                    <button type="submit" class="btn"
+                                        style="background-color: #f44336; color: #ffffff; width: 20rem;">
+                                        {{ __('Register') }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+                        <!-- Register -->
+                        <p>Already a member?
+                            <a href="{{route('login')}}">Login</a>
+                        </p>
 
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
-                            </div>
-                        </div>
                     </form>
+                    <!-- Form -->
+
                 </div>
+
             </div>
+            <!-- Material form login -->
         </div>
     </div>
 </div>

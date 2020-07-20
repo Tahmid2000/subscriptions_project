@@ -14,7 +14,7 @@
 background-image: linear-gradient(315deg, #90d5ec 0%, #fc575e 74%); margin-top: 100px;">
 
         <!-- Content -->
-        <div class="card-body text-white text-center py-5 px-5 my-5">
+        <div class="card-body text-white text-center py-5 px-5 my-5" style="font-size: 120%;">
 
             <h1 class="mb-4">
                 <strong>Your Statistics</strong>
@@ -32,9 +32,6 @@ background-image: linear-gradient(315deg, #90d5ec 0%, #fc575e 74%); margin-top: 
                 <strong>The second graph shows the cost per year per category. If you didn't specify a category, it is
                     automatically sorted as an 'Other' category.</strong>
             </p>
-            <p class="mb-4">
-                <strong>More graphs coming soon!</strong>
-            </p>
 
         </div>
         <!-- Content -->
@@ -47,7 +44,7 @@ background-image: linear-gradient(315deg, #90d5ec 0%, #fc575e 74%); margin-top: 
     <h2>Yearly Expense (w/o tax): ${{($totalprices)}}</h2>
 </div>
 <div class="d-flex justify-content-center mb-4">
-    <h2>Average Monthly Expense (w/ tax): ${{(number_format($totalpricestaxed/12,2))}}</h2>
+    <h2>Average Monthly Expense (w/ tax): ${{$totalpricesmonthly}}</h2>
 </div>
 <div class="d-flex justify-content-center mb-5">
     <div class="card" style="width: 60%;">

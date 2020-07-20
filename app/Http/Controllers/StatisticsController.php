@@ -41,9 +41,12 @@ class StatisticsController extends Controller
             $totalprices += $price;
         }
         $totalpricestaxed = $totalprices * 1.0825;
-        $totalprices = number_format($totalprices, 2);
-        $totalpricestaxed = number_format($totalpricestaxed, 2);
-        return view('statistics.index', compact('totalprices', 'totalpricestaxed', 'costMonth', 'categoryChart'));
+        $totalpricesmonthly = $totalpricestaxed / 12;
+        $totalprices = number_format((float)$totalprices, 2, '.', '');
+        $totalpricestaxed = number_format((float)$totalpricestaxed, 2, '.', '');
+        $totalpricesmonthly = number_format((float)$totalpricesmonthly, 2, '.', '');
+        
+        return view('statistics.index', compact('totalprices', 'totalpricestaxed', 'costMonth', 'categoryChart', 'totalpricesmonthly'));
     }
 
     public function costMonthGraph(Collection $raws)
@@ -80,7 +83,7 @@ class StatisticsController extends Controller
         $months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         foreach ($raws as $raw) {
             if ($raw['period'] === 'Monthly') {
-                $price = $raw['price'];
+                $price = $raw['price'] * 1.0825;
                 $months = array_map(function ($val) use ($price) {
                     return $val + $price;
                 }, $months);
@@ -94,9 +97,9 @@ class StatisticsController extends Controller
                 }
             } else if ($raw['period'] === 'Yearly') {
                 $month = Carbon::create($raw['first_date'])->month;
-                $months[$month - 1] += $raw['price'];
+                $months[$month - 1] += $raw['price'] * 1.0825;
             } else if ($raw['period'] === 'Weekly') {
-                $daily_price = $raw['price'] / 7;
+                $daily_price = ($raw['price'] * 1.0825) / 7;
                 foreach ($months as $key => $value) {
                     if ($key == 0 || $key == 2 || $key == 4 || $key == 6 || $key == 7 || $key == 9 || $key == 11) {
                         $months[$key] += $daily_price * 31;
@@ -114,13 +117,13 @@ class StatisticsController extends Controller
                 $month = Carbon::create($raw['first_date'])->month;
                 $index = $month - 1;
                 while ($index < 12) {
-                    $months[$index] += $raw['price'];
+                    $months[$index] += $raw['price'] * 1.0825;
                     $index += 3;
                 }
                 if (Carbon::create($raw['first_date'])->year !== Carbon::now()->year) {
                     $index = $month - 4;
                     while ($index >= 0) {
-                        $months[$index] += $raw['price'];
+                        $months[$index] += $raw['price'] * 1.0825 ; 
                         $index -= 3;
                     }
                 }
@@ -181,7 +184,7 @@ class StatisticsController extends Controller
                 $data[$raw['category']] += $price * 1.0825;
         }
         foreach ($data as $key => $value) {
-            $data[$key] = number_format($value, 2);
+            $data[$key] = number_format((float)$value, 2, '.', '');
         }
         $usersChart = new StatisticsChart;
         $usersChart->minimalist(true);

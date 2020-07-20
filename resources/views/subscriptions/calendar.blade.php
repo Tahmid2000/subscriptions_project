@@ -15,7 +15,7 @@
 background-image: linear-gradient(315deg, #f9484a 0%, #fbd72b 74%); margin-top: 100px;">
 
         <!-- Content -->
-        <div class="card-body text-white text-center py-5 px-5 my-5">
+        <div class="card-body text-white text-center py-5 px-5 my-5" style="font-size: 120%;">
 
             <h1 class="mb-4">
                 <strong>Your Calendar</strong>
