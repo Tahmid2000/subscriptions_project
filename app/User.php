@@ -5,11 +5,12 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Thomasjohnkane\Snooze\Traits\SnoozeNotifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
-
+    use SnoozeNotifiable;
     /**
      * The attributes that are mass assignable.
      *
@@ -39,6 +40,6 @@ class User extends Authenticatable
 
     public function subscription()
     {
-        return $this->hasMany(Subscription::class);
+        return $this->hasMany('App\Subscription');
     }
 }

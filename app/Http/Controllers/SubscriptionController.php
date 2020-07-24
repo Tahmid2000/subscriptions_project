@@ -16,7 +16,7 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
     /**
      * Display a listing of the resource.
@@ -48,14 +48,25 @@ class SubscriptionController extends Controller
     public function store()
     {
         $validator = $this->validateSubscription();
+        $endDate = request('end_date');
+        $category = request('category');
+        if ($endDate == '') {
+            $endDate = null;
+        } else {
+            $endDate = Carbon::create(request('end_date'));
+        }
+        if ($category == 'Select One') {
+            $category = 'other';
+        }
         $subscription = Subscription::firstOrCreate([
             'user_id' => Auth::id(),
             'subscription_name' => strtolower(request('subscription_name')),
             'price' => request('price'),
             'first_date' => Carbon::create(request('first_date')),
             'next_date' => Carbon::create(request('first_date')),
+            'end_date' => $endDate,
             'period' => request('period'),
-            'category' => request('category')
+            'category' => $category
         ]);
         if ($subscription->first_date < Carbon::now()->addDays(-1))
             $this->updateNextDate($subscription);
@@ -102,13 +113,25 @@ class SubscriptionController extends Controller
             'subscription_name' => 'required|max:255',
             'price' => 'required:numeric',
             'first_date' => 'required|date',
+            'end_date' => 'nullable|date',
             'period' => 'required'
         ]);
+        $endDate = request('end_date');
+        $category = request('category');
+        if ($endDate == '') {
+            $endDate = null;
+        } else {
+            $endDate = Carbon::create(request('end_date'));
+        }
+        if ($category == 'Select One') {
+            $category = 'other';
+        }
         $subscription->update([
             'price' => request('price'),
             'first_date' => Carbon::create(request('first_date')),
+            'end_date' => $endDate,
             'period' => request('period'),
-            'category' => request('category')
+            'category' => $category
         ]);
         if ($subscription->first_date < Carbon::now()->addDays(-1))
             $this->updateNextDate($subscription);
@@ -228,6 +251,7 @@ class SubscriptionController extends Controller
             ],
             'price' => 'required:numeric',
             'first_date' => 'required|date',
+            'end_date' => 'nullable|date',
             'period' => 'required'
         ], $this->messages());
     }
@@ -238,7 +262,6 @@ class SubscriptionController extends Controller
             'subscription_name.required' => 'A subscription is required.',
             'price.required'  => 'A price is required.',
             'first_date.required' => 'An initial date is required.',
-            'first_date.date_format' => "Inputted date doesn't match the format mm-dd-yyyy.",
             'period.required' => 'A frequency is required.'
         ];
     }

@@ -19,6 +19,8 @@
         html,
         body {
             font-family: 'Helvetica';
+            overflow-x: hidden;
+            padding-right: 0 !important;
         }
 
         * {
@@ -164,6 +166,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script>
         function logoutWarning(){
             event.preventDefault();

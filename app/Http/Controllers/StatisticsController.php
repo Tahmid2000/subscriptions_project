@@ -14,7 +14,7 @@ class StatisticsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
     /**
      * Display a listing of the resource.
@@ -42,10 +42,10 @@ class StatisticsController extends Controller
         }
         $totalpricestaxed = $totalprices * 1.0825;
         $totalpricesmonthly = $totalpricestaxed / 12;
-        $totalprices = number_format((float)$totalprices, 2, '.', '');
-        $totalpricestaxed = number_format((float)$totalpricestaxed, 2, '.', '');
-        $totalpricesmonthly = number_format((float)$totalpricesmonthly, 2, '.', '');
-        
+        $totalprices = number_format((float) $totalprices, 2, '.', '');
+        $totalpricestaxed = number_format((float) $totalpricestaxed, 2, '.', '');
+        $totalpricesmonthly = number_format((float) $totalpricesmonthly, 2, '.', '');
+
         return view('statistics.index', compact('totalprices', 'totalpricestaxed', 'costMonth', 'categoryChart', 'totalpricesmonthly'));
     }
 
@@ -123,7 +123,7 @@ class StatisticsController extends Controller
                 if (Carbon::create($raw['first_date'])->year !== Carbon::now()->year) {
                     $index = $month - 4;
                     while ($index >= 0) {
-                        $months[$index] += $raw['price'] * 1.0825 ; 
+                        $months[$index] += $raw['price'] * 1.0825;
                         $index -= 3;
                     }
                 }
@@ -184,7 +184,7 @@ class StatisticsController extends Controller
                 $data[$raw['category']] += $price * 1.0825;
         }
         foreach ($data as $key => $value) {
-            $data[$key] = number_format((float)$value, 2, '.', '');
+            $data[$key] = number_format((float) $value, 2, '.', '');
         }
         $usersChart = new StatisticsChart;
         $usersChart->minimalist(true);

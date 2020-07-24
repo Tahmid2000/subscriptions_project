@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85e4647120655c950dda0e5919761231",
+    "content-hash": "7d4c7f06ec4f32eda429152a89d02c25",
     "packages": [
         {
             "name": "acaronlex/laravel-calendar",
@@ -4687,6 +4687,60 @@
                 }
             ],
             "time": "2020-05-30T20:35:19+00:00"
+        },
+        {
+            "name": "thomasjohnkane/snooze",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thomasjohnkane/snooze.git",
+                "reference": "45946c606ec4c4aff819b79e0d1bb6013d6b26fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thomasjohnkane/snooze/zipball/45946c606ec4c4aff819b79e0d1bb6013d6b26fa",
+                "reference": "45946c606ec4c4aff819b79e0d1bb6013d6b26fa",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.5 || ~6.0 || ~7.0",
+                "php": ">=7.2.5"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~3.8 || ~4.0|| ~5.0",
+                "phpunit/phpunit": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Thomasjohnkane\\Snooze\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Thomasjohnkane\\Snooze\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Kane",
+                    "email": "thomasjohnkane@gmail.com"
+                }
+            ],
+            "description": "Schedule future notifications and reminders in Laravel",
+            "keywords": [
+                "delayed notifications",
+                "notifications",
+                "scheduled",
+                "snooze"
+            ],
+            "time": "2020-03-03T20:48:06+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",

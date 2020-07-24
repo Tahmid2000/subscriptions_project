@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\SubscriptionDue;
 use App\Subscription;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +18,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
 
     /**
@@ -35,6 +37,15 @@ class HomeController extends Controller
                     'next_date' => $new_date
                 ]);
             }
+            $user = User::find(Auth::id());
+            /* $user->notifyAt(
+                new SubscriptionDue($sub),
+                Carbon::parse($sub->next_date)
+            ); */
+            /* $user->notifyAt(
+                new SubscriptionDue($sub),
+                Carbon::now()->addMinute()
+            ); */
         }
         if (request('sort')) {
             if (request('sort') === 'order') {
@@ -58,6 +69,7 @@ class HomeController extends Controller
         }
         $date = Carbon::now()->format('m/d/Y');
         $sorted = request('sort');
+
         return view('subscriptions.home', compact('subscriptions', 'sorted', 'date'));
     }
 }

@@ -119,15 +119,19 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 								@php
 								$firstDate = date("m/d/Y", strtotime($sub->first_date));
 								$nextDate = date("m/d/Y", strtotime($sub->next_date));
+								if ($sub->end_date != null)
+								$endDate = date("m/d/Y", strtotime($sub->end_date));
+								else
+								$endDate = 'None';
 								@endphp
 								<button type="button" class="btn btn-warning mr-3"
-									style="padding: .375rem .75rem; width: 3rem; text-align: center"
-									onclick="viewSub('{{ucwords($sub->subscription_name)}}', '{{$sub->price}}', '{{$firstDate}}', '{{$nextDate}}', '{{$sub->period}}', '{{ucwords($sub->category)}}')"
+									style="padding: .375rem .75rem; width: 3rem; text-align: center; border-radius: .125rem;"
+									onclick="viewSub('{{ucwords($sub->subscription_name)}}', '{{$sub->price}}', '{{$firstDate}}', '{{$nextDate}}', '{{$endDate}}','{{$sub->period}}', '{{ucwords($sub->category)}}')"
 									title="View Details">
 									<i class="fas fa-eye" style="color: black;"></i>
 								</button>
 								<button type="button" class="btn btn-primary mr-3"
-									style="padding: .375rem .75rem; width: 3rem; text-align: center"
+									style="padding: .375rem .75rem; width: 3rem; text-align: center; border-radius: .125rem;"
 									onclick="editForm({{$sub->id}})" title="Edit">
 									<i class="fas fa-edit" style="color: black;"></i>
 								</button>
@@ -167,85 +171,103 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 												</div>
 											</div>
 										</div>
-										<div class="form-group">
-											<label class="my-1 mr-2" for="period">Frequency</label>
-											<select name="period" class="form-control">
-												<option value="Monthly"
-													{{($sub->period == 'Monthly') ? 'selected' : ''}}
-													{{ (old('period') === 'Monthly') ? 'selected' : ''}}>Monthly
-
-												<option value="Yearly" {{($sub->period == 'Yearly') ? 'selected' : ''}}
-													{{ (old('period') === 'Yearly') ? 'selected' : ''}}>Yearly</option>
-												<option value="Weekly" {{($sub->period == 'Weekly') ? 'selected' : ''}}
-													{{ (old('period') === 'Weekly') ? 'selected' : ''}}>Weekly</option>
-												<option value="Quarterly"
-													{{($sub->period == 'Quarterly') ? 'selected' : ''}}
-													{{ (old('period') === 'Quarterly') ? 'selected' : ''}}>Quarterly
-												</option>
-											</select>
+										{{-- <div class="form-group">
+											<label class="my-1 mr-2" for="due_dates">End Date (Optional)</label>
+											<div class="input-group date" id="datetimepicker1-end_date-{{$sub->id}}"
+										data-target-input="nearest">
+										@php
+										if ($sub->end_date){
+										$endDateInp = date("m/d/Y", strtotime($sub->end_date));
+										}
+										else {
+										$endDateInp = "";
+										}
+										@endphp
+										<input type="text" name="end_date" id="end_date_{{$sub->id}}"
+											class="form-control datetimepicker-input"
+											data-target="#datetimepicker1-end_date-{{$sub->id}}"
+											value="{{ old('end_date', $endDateInp) }}" />
+										<div class="input-group-append"
+											data-target="#datetimepicker1-end_date-{{$sub->id}}"
+											data-toggle="datetimepicker">
+											<div class="input-group-text"><i class="fa fa-calendar"></i></div>
 										</div>
-										<div class="form-group">
-											<label class="my-1 mr-2" for="period">Category (Optional)</label>
-											<select name="category" class="form-control">
-												<option>Select One</option>
-												<option value="entertainment"
-													{{($sub->category == 'entertainment') ? 'selected' : ''}}
-													{{ (old('category') === 'entertainment') ? 'selected' : ''}}>
-													Entertainment
-												</option>
-												<option value="services"
-													{{($sub->category == 'services') ? 'selected' : ''}}
-													{{ (old('category') === 'services') ? 'selected' : ''}}>Services
-												</option>
-												<option value="work" {{($sub->category == 'work') ? 'selected' : ''}}
-													{{ (old('category') === 'work') ? 'selected' : ''}}>Work
-												</option>
-												<option value="personal"
-													{{($sub->category == 'personal') ? 'selected' : ''}}
-													{{ (old('category') === 'personal') ? 'selected' : ''}}>Personal
-												</option>
-												<option value="other" {{($sub->category == 'other') ? 'selected' : ''}}
-													{{ (old('category') === 'other') ? 'selected' : ''}}>Other
-												</option>
-											</select>
-										</div>
-
-									</form>
 								</div>
-								<button type="button" class="btn btn-danger" title="Delete"
-									onclick="deleteSub({{$sub->id}}, '{{strval(ucwords($sub->subscription_name))}}');"
-									style="padding:.375rem .75rem; border-radius:.125rem; width:3rem;">
-									<i class="fas fa-trash-alt" style="color: black;"></i>
-								</button>
-								<form method="POST" action="{{route('delete', $sub)}}" id="{{$sub->id}}"
-									style="display: none">
-									<input type="hidden" name="_method" value="DELETE">
-									@csrf
-								</form>
+							</div> --}}
+							<div class="form-group">
+								<label class="my-1 mr-2" for="period">Frequency</label>
+								<select name="period" class="form-control">
+									<option value="Monthly" {{($sub->period == 'Monthly') ? 'selected' : ''}}
+										{{ (old('period') === 'Monthly') ? 'selected' : ''}}>Monthly
+
+									<option value="Yearly" {{($sub->period == 'Yearly') ? 'selected' : ''}}
+										{{ (old('period') === 'Yearly') ? 'selected' : ''}}>Yearly</option>
+									<option value="Weekly" {{($sub->period == 'Weekly') ? 'selected' : ''}}
+										{{ (old('period') === 'Weekly') ? 'selected' : ''}}>Weekly</option>
+									<option value="Quarterly" {{($sub->period == 'Quarterly') ? 'selected' : ''}}
+										{{ (old('period') === 'Quarterly') ? 'selected' : ''}}>Quarterly
+									</option>
+								</select>
 							</div>
+							<div class="form-group">
+								<label class="my-1 mr-2" for="period">Category (Optional)</label>
+								<select name="category" class="form-control">
+									<option>Select One</option>
+									<option value="entertainment"
+										{{($sub->category == 'entertainment') ? 'selected' : ''}}
+										{{ (old('category') === 'entertainment') ? 'selected' : ''}}>
+										Entertainment
+									</option>
+									<option value="services" {{($sub->category == 'services') ? 'selected' : ''}}
+										{{ (old('category') === 'services') ? 'selected' : ''}}>Services
+									</option>
+									<option value="work" {{($sub->category == 'work') ? 'selected' : ''}}
+										{{ (old('category') === 'work') ? 'selected' : ''}}>Work
+									</option>
+									<option value="personal" {{($sub->category == 'personal') ? 'selected' : ''}}
+										{{ (old('category') === 'personal') ? 'selected' : ''}}>Personal
+									</option>
+									<option value="other" {{($sub->category == 'other') ? 'selected' : ''}}
+										{{ (old('category') === 'other') ? 'selected' : ''}}>Other
+									</option>
+								</select>
+							</div>
+
+							</form>
 						</div>
+						<button type="button" class="btn btn-danger" title="Delete"
+							onclick="deleteSub({{$sub->id}}, '{{strval(ucwords($sub->subscription_name))}}');"
+							style="padding:.375rem .75rem; border-radius:.125rem; width:3rem;">
+							<i class="fas fa-trash-alt" style="color: black;"></i>
+						</button>
+						<form method="POST" action="{{route('delete', $sub)}}" id="{{$sub->id}}" style="display: none">
+							<input type="hidden" name="_method" value="DELETE">
+							@csrf
+						</form>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	@php
-	$threeCols = ($index % 3) == 0;
-	$fourCols = ($index % 4) == 0;
-	@endphp
-	@if ($threeCols && $fourCols)
-	<div class="clearfix visible-lg visible-md"></div>
-	@elseif ($fourCols)
-	{{-- After 4 cols --}}
-	<div class="clearfix visible-lg"></div>
-	@elseif ($threeCols)
-	{{-- After 3 cols --}}
-	<div class="clearfix visible-md"></div>
-	@endif
-	@php
-	$index++;
-	@endphp
-	@endforeach
+</div>
+</div>
+@php
+$threeCols = ($index % 3) == 0;
+$fourCols = ($index % 4) == 0;
+@endphp
+@if ($threeCols && $fourCols)
+<div class="clearfix visible-lg visible-md"></div>
+@elseif ($fourCols)
+{{-- After 4 cols --}}
+<div class="clearfix visible-lg"></div>
+@elseif ($threeCols)
+{{-- After 3 cols --}}
+<div class="clearfix visible-md"></div>
+@endif
+@php
+$index++;
+@endphp
+@endforeach
 </div>
 @else
 You have no subscriptions, add one!
@@ -260,6 +282,10 @@ You have no subscriptions, add one!
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
+	integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
+	integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
 <script>
 	function deleteSub(id, subname){
 		const swalWithBootstrapButtons = Swal.mixin({
@@ -285,7 +311,6 @@ You have no subscriptions, add one!
 				}
 		})
 	}
-	
 	function addForm(){
 		formCode = `<form method="POST" action="{{route('home')}}" style="color: #757575;" id='addForm'>
 			@csrf
@@ -316,6 +341,7 @@ You have no subscriptions, add one!
 					</div>
 				</div>
 			</div>
+			
 			<div class="form-group">
 				<label class="my-1 mr-2" for="period">Frequency</label>
 				<select name="period" class="form-control">
@@ -343,6 +369,7 @@ You have no subscriptions, add one!
 				</select>
 			</div>
 		</form>`;
+		
 		const swalWithBootstrapButtons = Swal.mixin({
 		customClass: {
 		confirmButton: 'btn btn-success z-depth-0',
@@ -393,13 +420,14 @@ You have no subscriptions, add one!
 				resolve([
                             $('#subscription_name').val(),
                             $('#price').val(),
-                            $('#first_date').val()
+                            $('#first_date').val(),
+							$('#end_date').val(),
                         ]);
 				}
 			})
 		},
 		onOpen: function () {
-			$('#subscription_name').focus()
+			$('#subscription_name').focus();
 		},
 		showCancelButton: true,
 		confirmButtonText: 'add <i class="fas fa-plus"></i>',
@@ -460,7 +488,8 @@ You have no subscriptions, add one!
 			})
 		},
 		onOpen: function () {
-			$('#price').focus()
+			$('#price').focus();
+			
 		},
 		showCancelButton: true,
 		confirmButtonText: 'Update <i class="fas fa-edit"></i>',
@@ -477,7 +506,7 @@ You have no subscriptions, add one!
 		})
 	}
 
-	function viewSub(name, price, firstDate, nextDate, frequency, category){
+	function viewSub(name, price, firstDate, nextDate, endDate, frequency, category){
 		const swalWithBootstrapButtons = Swal.mixin({
 		customClass: {
 		confirmButton: 'btn btn-primary z-depth-0',
@@ -492,6 +521,7 @@ You have no subscriptions, add one!
 		'<b>Price: </b>$' + price + '<br>' +
 		'<b>First Date: </b>' +firstDate + '<br>' +
 		'<b>Next Date: </b>' +nextDate + '<br>' +
+		/* '<b>End Date: </b>' +endDate + '<br>' + */
 		'<b>Frequency: </b>' +frequency + '<br>' +
 		'<b>Category: </b>' +category,
 		showCloseButton: true,
@@ -506,8 +536,5 @@ You have no subscriptions, add one!
 		return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 	}
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
-	integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
-	integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
+
 @endpush

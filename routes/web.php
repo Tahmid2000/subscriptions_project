@@ -14,19 +14,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/about', function () {
+/* Route::get('/about', function () {
     return view('subscriptions.about');
-})->name('about');
+})->name('about'); */
 
-Route::get('/subscriptions/create', 'SubscriptionController@create')->name('create');
+/* Route::get('/subscriptions/create', 'SubscriptionController@create')->name('create'); */
 Route::post('/home', 'SubscriptionController@store');
-Route::get('/subscriptions/{subscription}/edit', 'SubscriptionController@edit')->name('edit');
+/* Route::get('/subscriptions/{subscription}/edit', 'SubscriptionController@edit')->name('edit'); */
 Route::put('/subscriptions/{subscription}', 'SubscriptionController@update')->name('update');
 Route::delete('/subscriptions/{subscription}', 'SubscriptionController@destroy')->name('delete');
 
