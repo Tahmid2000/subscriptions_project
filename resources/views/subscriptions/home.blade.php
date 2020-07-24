@@ -75,7 +75,7 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 	<div class="col-lg-3 col-md-4">
 		<div class="container">
 			<div class="d-flex justify-content-center">
-				<div class="card mb-3 animated zoomIn" style="width: 24rem; /* min-height: 15rem; */">
+				<div class="card mb-3 animated zoomIn" style="width: 24rem; /* max-height: 1%; */">
 					<div class="card-body">
 						<div class="d-flex justify-content-center mb-1">
 
@@ -83,8 +83,8 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 								<h3 class="card-title mb-3"
 									style="text-align: center; font-size: 200%; overflow: hidden;">
 									{{ucwords($sub->subscription_name)}} <img
-										src="https://logo.clearbit.com/{{str_replace(' ', '',$sub->subscription_name)}}.com"
-										width="35" height="35" onerror="this.remove();">
+										src="https://logo.clearbit.com/{{str_replace(' ', '',$sub->subscription_name)}}.com?size=35"
+										{{-- width="35" height="35" --}} onerror="this.remove();">
 							</div>
 							</h3>
 						</div>
@@ -272,7 +272,6 @@ $index++;
 @else
 You have no subscriptions, add one!
 @endif
-
 <div class="d-flex justify-content-center">
 	<div class="btn btn-dark" onclick="addForm()">Add <i class="fas fa-plus"></i></div>
 </div>
