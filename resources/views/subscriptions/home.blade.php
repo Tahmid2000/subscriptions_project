@@ -14,15 +14,6 @@
 	integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
 @endpush
 @section('content')
-@if(Session::has('flash_message'))
-<div class="container">
-	<div class="d-flex justify-content-center">
-		<div class="alert alert-success">
-			{{ Session::get('flash_message') }}
-		</div>
-	</div>
-</div>
-@endif
 <div class="container">
 	<section class="card wow fadeIn" style="background-color: #42378f;
 background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 100px;">
@@ -38,7 +29,8 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 			</p>
 			<p class="mb-4">
 				<strong>You can see the upcoming pay dates and prices of all your subscriptions. You can also sort by
-					different categories to get a view of the subscriptions in the way you prefer.</strong>
+					different categories to get a view of the subscriptions in the way you prefer.
+				</strong>
 			</p>
 		</div>
 		<!-- Content -->
@@ -66,6 +58,15 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 		</select>
 	</form>
 </div>
+@if(Session::has('flash_message'))
+<div class="container">
+	<div class="d-flex justify-content-center">
+		<div class="alert alert-success">
+			{{ Session::get('flash_message') }}
+		</div>
+	</div>
+</div>
+@endif
 @if ($subscriptions)
 <div class="row px-5">
 	@php
@@ -132,148 +133,258 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 								</button>
 								<button type="button" class="btn btn-primary mr-3"
 									style="padding: .375rem .75rem; width: 3rem; text-align: center; border-radius: .125rem;"
-									onclick="editForm({{$sub->id}})" title="Edit">
+									{{-- onclick="editForm({{$sub->id}})" --}}title="Edit" data-toggle="modal"
+									data-target="#editModal-{{$sub->id}}">
 									<i class="fas fa-edit" style="color: black;"></i>
 								</button>
-								<div class="edit-form-{{$sub->id}}" style="display: none;">
-									<form method="POST" action="{{route('update', $sub)}}" id='editForm-{{$sub->id}}'>
-										@csrf
-										@method('PUT')
-										<div class="form-group">
-											<label class="my-1 mr-2" for="subscription_name">Subscription Name</label>
-											<input type="name" name="subscription_name" class="form-control"
-												id="subscription_name_{{$sub->id}}" style="text-transform:capitalize"
-												value="{{$sub->subscription_name}}" readonly>
-										</div>
-										<div class="form-group">
-											<label class="my-1 mr-2" for="price">Price</label>
-											<div class="input-group mb-2">
-												<div class="input-group-prepend">
-													<div class="input-group-text"><i class="fas fa-dollar-sign"></i>
-													</div>
-												</div>
-												<input type="price" class="form-control" id="price_{{$sub->id}}"
-													value="{{old('price',$sub->price)}}" name="price">
-											</div>
-										</div>
-										<div class="form-group">
-											<label class="my-1 mr-2" for="due_dates">First Due Date</label>
-											<div class="input-group date" id="datetimepicker1-{{$sub->id}}"
-												data-target-input="nearest">
-												<input type="text" name="first_date" id="first_date_{{$sub->id}}"
-													class="form-control datetimepicker-input"
-													data-target="#datetimepicker1-{{$sub->id}}"
-													value="{{ old('first_date', date("m/d/Y", strtotime($sub->first_date))) }}" />
-												<div class="input-group-append"
-													data-target="#datetimepicker1-{{$sub->id}}"
-													data-toggle="datetimepicker">
-													<div class="input-group-text"><i class="fa fa-calendar"></i></div>
-												</div>
-											</div>
-										</div>
-										{{-- <div class="form-group">
-											<label class="my-1 mr-2" for="due_dates">End Date (Optional)</label>
-											<div class="input-group date" id="datetimepicker1-end_date-{{$sub->id}}"
-										data-target-input="nearest">
-										@php
-										if ($sub->end_date){
-										$endDateInp = date("m/d/Y", strtotime($sub->end_date));
-										}
-										else {
-										$endDateInp = "";
-										}
-										@endphp
-										<input type="text" name="end_date" id="end_date_{{$sub->id}}"
-											class="form-control datetimepicker-input"
-											data-target="#datetimepicker1-end_date-{{$sub->id}}"
-											value="{{ old('end_date', $endDateInp) }}" />
-										<div class="input-group-append"
-											data-target="#datetimepicker1-end_date-{{$sub->id}}"
-											data-toggle="datetimepicker">
-											<div class="input-group-text"><i class="fa fa-calendar"></i></div>
-										</div>
-								</div>
-							</div> --}}
-							<div class="form-group">
-								<label class="my-1 mr-2" for="period">Frequency</label>
-								<select name="period" class="form-control">
-									<option value="Monthly" {{($sub->period == 'Monthly') ? 'selected' : ''}}
-										{{ (old('period') === 'Monthly') ? 'selected' : ''}}>Monthly
-
-									<option value="Yearly" {{($sub->period == 'Yearly') ? 'selected' : ''}}
-										{{ (old('period') === 'Yearly') ? 'selected' : ''}}>Yearly</option>
-									<option value="Weekly" {{($sub->period == 'Weekly') ? 'selected' : ''}}
-										{{ (old('period') === 'Weekly') ? 'selected' : ''}}>Weekly</option>
-									<option value="Quarterly" {{($sub->period == 'Quarterly') ? 'selected' : ''}}
-										{{ (old('period') === 'Quarterly') ? 'selected' : ''}}>Quarterly
-									</option>
-								</select>
+								<button type="button" class="btn btn-danger" title="Delete"
+									onclick="deleteSub({{$sub->id}}, '{{strval(ucwords($sub->subscription_name))}}');"
+									style="padding:.375rem .75rem; border-radius:.125rem; width:3rem;">
+									<i class="fas fa-trash-alt" style="color: black;"></i>
+								</button>
+								<form method="POST" action="{{route('delete', $sub)}}" id="{{$sub->id}}"
+									style="display: none">
+									<input type="hidden" name="_method" value="DELETE">
+									@csrf
+								</form>
 							</div>
-							<div class="form-group">
-								<label class="my-1 mr-2" for="period">Category (Optional)</label>
-								<select name="category" class="form-control">
-									<option>Select One</option>
-									<option value="entertainment"
-										{{($sub->category == 'entertainment') ? 'selected' : ''}}
-										{{ (old('category') === 'entertainment') ? 'selected' : ''}}>
-										Entertainment
-									</option>
-									<option value="services" {{($sub->category == 'services') ? 'selected' : ''}}
-										{{ (old('category') === 'services') ? 'selected' : ''}}>Services
-									</option>
-									<option value="work" {{($sub->category == 'work') ? 'selected' : ''}}
-										{{ (old('category') === 'work') ? 'selected' : ''}}>Work
-									</option>
-									<option value="personal" {{($sub->category == 'personal') ? 'selected' : ''}}
-										{{ (old('category') === 'personal') ? 'selected' : ''}}>Personal
-									</option>
-									<option value="other" {{($sub->category == 'other') ? 'selected' : ''}}
-										{{ (old('category') === 'other') ? 'selected' : ''}}>Other
-									</option>
-								</select>
-							</div>
-
-							</form>
 						</div>
-						<button type="button" class="btn btn-danger" title="Delete"
-							onclick="deleteSub({{$sub->id}}, '{{strval(ucwords($sub->subscription_name))}}');"
-							style="padding:.375rem .75rem; border-radius:.125rem; width:3rem;">
-							<i class="fas fa-trash-alt" style="color: black;"></i>
-						</button>
-						<form method="POST" action="{{route('delete', $sub)}}" id="{{$sub->id}}" style="display: none">
-							<input type="hidden" name="_method" value="DELETE">
-							@csrf
-						</form>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="editModal-{{$sub->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Edit {{ucwords($sub->subscription_name)}}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form method="POST" action="{{route('update', $sub)}}" id='editForm-{{$sub->id}}'>
+						@csrf
+						@method('PUT')
+						<div class="form-group">
+							<label class="my-1 mr-2" for="subscription_name">Subscription Name</label>
+							<input type="name" name="subscription_name" class="form-control"
+								id="subscription_name_{{$sub->id}}" style="text-transform:capitalize"
+								value="{{$sub->subscription_name}}" readonly>
+							<span class="invalid-feedback" role="alert">
+								<p style="color: red; margin-bottom: -15px;"
+									id="subscription_name_{{$sub->id}}_message">
+								</p>
+							</span>
+						</div>
+						<div class="form-group">
+							<label class="my-1 mr-2" for="price">Price</label>
+							<div class="input-group mb-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text"><i class="fas fa-dollar-sign"></i></div>
+								</div>
+								<input type="price" class="form-control" id="price_{{$sub->id}}"
+									value="{{old('price',$sub->price)}}" name="price">
+								<span class="invalid-feedback" role="alert">
+									<p style="color: red; margin-bottom: -15px;" id="price_{{$sub->id}}_message">
+									</p>
+								</span>
+							</div>
+
+						</div>
+						<div class="form-group">
+							<label class="my-1 mr-2" for="due_dates">First Due Date</label>
+							<div class="input-group date" id="datetimepicker1-{{$sub->id}}" data-target-input="nearest">
+								<input type="text" name="first_date" class="form-control datetimepicker-input"
+									data-target="#datetimepicker1-{{$sub->id}}"
+									value="{{ old('first_date', date("m/d/Y", strtotime($sub->first_date))) }}"
+									id="first_date_{{$sub->id}}" />
+								<div class="input-group-append" data-target="#datetimepicker1-{{$sub->id}}"
+									data-toggle="datetimepicker">
+									<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+								</div>
+								<span class="invalid-feedback" role="alert">
+									<p style="color: red; margin-bottom: -15px;" id="first_date_{{$sub->id}}_message">
+									</p>
+								</span>
+							</div>
+
+						</div>
+						<div class="form-group">
+							<label class="my-1 mr-2" for="period">Frequency</label>
+							<select name="period" class="form-control">
+								<option value="Monthly" {{($sub->period == 'Monthly') ? 'selected' : ''}}
+									{{ (old('period') === 'Monthly') ? 'selected' : ''}}>Monthly</option>
+								<option value="Yearly" {{($sub->period == 'Yearly') ? 'selected' : ''}}
+									{{ (old('period') === 'Yearly') ? 'selected' : ''}}>Yearly</option>
+								<option value="Weekly" {{($sub->period == 'Weekly') ? 'selected' : ''}}
+									{{ (old('period') === 'Weekly') ? 'selected' : ''}}>Weekly</option>
+								<option value="Quarterly" {{($sub->period == 'Quarterly') ? 'selected' : ''}}
+									{{ (old('period') === 'Quarterly') ? 'selected' : ''}}>Quarterly
+								</option>
+							</select>
+							<span class="invalid-feedback" role="alert">
+								<p style="color: red; margin-bottom: -15px;" id="frequency_{{$sub->id}}_message">
+								</p>
+							</span>
+						</div>
+						<div class="form-group">
+							<label class="my-1 mr-2" for="period">Category (Optional)</label>
+							<select name="category" class="form-control">
+								<option>Select One</option>
+								<option value="entertainment" {{($sub->category == 'entertainment') ? 'selected' : ''}}
+									{{ (old('category') === 'entertainment') ? 'selected' : ''}}>
+									Entertainment
+								</option>
+								<option value="services" {{($sub->category == 'services') ? 'selected' : ''}}
+									{{ (old('category') === 'services') ? 'selected' : ''}}>Services
+								</option>
+								<option value="work" {{($sub->category == 'work') ? 'selected' : ''}}
+									{{ (old('category') === 'work') ? 'selected' : ''}}>Work
+								</option>
+								<option value="personal" {{($sub->category == 'personal') ? 'selected' : ''}}
+									{{ (old('category') === 'personal') ? 'selected' : ''}}>Personal
+								</option>
+								<option value="other" {{($sub->category == 'other') ? 'selected' : ''}}
+									{{ (old('category') === 'other') ? 'selected' : ''}}>Other
+								</option>
+							</select>
+							<span class="invalid-feedback" role="alert">
+								<p style="color: red; margin-bottom: -15px;" id="category_{{$sub->id}}_message">
+								</p>
+							</span>
+						</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-success" onclick="editSub('{{$sub->id}}')">UPDATE <i
+							class="fas fa-edit"></i></button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	@php
+	$threeCols = ($index % 3) == 0;
+	$fourCols = ($index % 4) == 0;
+	@endphp
+	@if ($threeCols && $fourCols)
+	<div class="clearfix visible-lg visible-md"></div>
+	@elseif ($fourCols)
+	{{-- After 4 cols --}}
+	<div class="clearfix visible-lg"></div>
+	@elseif ($threeCols)
+	{{-- After 3 cols --}}
+	<div class="clearfix visible-md"></div>
+	@endif
+	@php
+	$index++;
+	@endphp
+	@endforeach
+
 </div>
-</div>
-@php
-$threeCols = ($index % 3) == 0;
-$fourCols = ($index % 4) == 0;
-@endphp
-@if ($threeCols && $fourCols)
-<div class="clearfix visible-lg visible-md"></div>
-@elseif ($fourCols)
-{{-- After 4 cols --}}
-<div class="clearfix visible-lg"></div>
-@elseif ($threeCols)
-{{-- After 3 cols --}}
-<div class="clearfix visible-md"></div>
 @endif
-@php
-$index++;
-@endphp
-@endforeach
-</div>
-@else
-You have no subscriptions, add one!
-@endif
+<input type="hidden" value="{{route('home')}}" id="home_path">
 <div class="d-flex justify-content-center">
-	<div class="btn btn-dark" onclick="addForm()">Add <i class="fas fa-plus"></i></div>
+	<div class="btn btn-dark" data-toggle="modal" data-target="#addSub">Add <i class="fas fa-plus"></i></div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="addSub" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Add Subscription</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form method="POST" action="{{route('home')}}" style="color: #757575;" id="addSubForm">
+					@csrf
+					<div class="form-group">
+						<label class="my-1 mr-2" for="subscription_name">Subscription Name</label>
+						<input type="name" name="subscription_name" class="form-control" id="subscription_name_add"
+							style="text-transform:capitalize" value="{{ old('subscription_name') }}">
+						<span class="invalid-feedback" role="alert">
+							<p style="color: red; margin-bottom: -15px;" id="subscription_name_add_message">
+							</p>
+						</span>
+					</div>
+					<div class="form-group">
+						<label class="my-1 mr-2" for="price">Price</label>
+						<div class="input-group mb-2">
+							<div class="input-group-prepend">
+								<div class="input-group-text"><i class="fas fa-dollar-sign"></i></div>
+							</div>
+							<input type="price" class="form-control" id="price_add" value="{{ old('price', 9.99) }}"
+								name="price" onfocus="this.value=''">
+							<span class="invalid-feedback" role="alert">
+								<p style="color: red; margin-bottom: -15px;" id="price_add_message">
+								</p>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="my-1 mr-2" for="due_dates">First Due Date</label>
+						<div class="input-group date" id="datetimepicker1-add" data-target-input="nearest">
+							<input type="text" name="first_date" class="form-control datetimepicker-input"
+								data-target="#datetimepicker1-add" value="{{ old('first_date', $date) }}"
+								id="first_date_add" />
+							<div class="input-group-append" data-target="#datetimepicker1-add"
+								data-toggle="datetimepicker">
+								<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+							</div>
+							<span class="invalid-feedback" role="alert">
+								<p style="color: red; margin-bottom: -15px;" id="first_date_add_message">
+								</p>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="my-1 mr-2" for="period">Frequency</label>
+						<select name="period" class="form-control">
+							<option value="Monthly" {{ (old('period') === 'Monthly') ? 'selected' : ''}}>Monthly
+							</option>
+							<option value="Yearly" {{ (old('period') === 'Yearly') ? 'selected' : ''}}>Yearly</option>
+							<option value="Weekly" {{ (old('period') === 'Weekly') ? 'selected' : ''}}>Weekly</option>
+							<option value="Quarterly" {{ (old('period') === 'Quarterly') ? 'selected' : ''}}>Quarterly
+							</option>
+						</select>
+						<span class="invalid-feedback" role="alert">
+							<p style="color: red; margin-bottom: -15px;" id="frequency_add_message">
+							</p>
+						</span>
+					</div>
+					<div class="form-group">
+						<label class="my-1 mr-2" for="period">Category (Optional)</label>
+						<select name="category" class="form-control">
+							<option>Select One</option>
+							<option value="entertainment" {{ (old('category') === 'entertainment') ? 'selected' : ''}}>
+								Entertainment
+							</option>
+							<option value="services" {{ (old('category') === 'services') ? 'selected' : ''}}>Services
+							</option>
+							<option value="work" {{ (old('category') === 'work') ? 'selected' : ''}}>Work</option>
+							<option value="personal" {{ (old('category') === 'personal') ? 'selected' : ''}}>Personal
+							</option>
+							<option value="other" {{ (old('category') === 'other') ? 'selected' : ''}}>Other
+							</option>
+						</select>
+						<span class="invalid-feedback" role="alert">
+							<p style="color: red; margin-bottom: -15px;" id="category_add_message">
+							</p>
+						</span>
+					</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+				<button type="submit" class="btn btn-success">Add <i class="fas fa-plus"></i></button>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 @endsection
 
@@ -310,229 +421,93 @@ You have no subscriptions, add one!
 				}
 		})
 	}
-	function addForm(){
-		formCode = `<form method="POST" action="{{route('home')}}" style="color: #757575;" id='addForm'>
-			@csrf
-			<div class="form-group">
-				<label class="my-1 mr-2" for="subscription_name">Subscription Name</label>
-				<input type="name" name="subscription_name"
-					class="form-control" id="subscription_name"
-					style="text-transform:capitalize" value="{{ old('subscription_name') }}">
-			</div>
-			<div class="form-group">
-				<label class="my-1 mr-2" for="price">Price</label>
-				<div class="input-group mb-2">
-					<div class="input-group-prepend">
-						<div class="input-group-text"><i class="fas fa-dollar-sign"></i></div>
-					</div>
-					<input type="price" class="form-control" id="price"
-						value="{{ old('price', 9.99) }}" name="price" onfocus="this.value=''">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="my-1 mr-2" for="due_dates">First Due Date</label>
-				<div class="input-group date" id="datetimepicker1-add" data-target-input="nearest">
-					<input type="text" name="first_date" id="first_date"
-						class="form-control datetimepicker-input"
-						data-target="#datetimepicker1-add" value="{{ old('first_date', $date) }}" />
-					<div class="input-group-append" data-target="#datetimepicker1-add" data-toggle="datetimepicker">
-						<div class="input-group-text"><i class="fa fa-calendar"></i></div>
-					</div>
-				</div>
-			</div>
-			
-			<div class="form-group">
-				<label class="my-1 mr-2" for="period">Frequency</label>
-				<select name="period" class="form-control">
-					<option value="Monthly" {{ (old('period') === 'Monthly') ? 'selected' : ''}}>Monthly</option>
-					<option value="Yearly" {{ (old('period') === 'Yearly') ? 'selected' : ''}}>Yearly</option>
-					<option value="Weekly" {{ (old('period') === 'Weekly') ? 'selected' : ''}}>Weekly</option>
-					<option value="Quarterly" {{ (old('period') === 'Quarterly') ? 'selected' : ''}}>Quarterly
-					</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label class="my-1 mr-2" for="period">Category (Optional)</label>
-				<select name="category" class="form-control">
-					<option>Select One</option>
-					<option value="entertainment" {{ (old('category') === 'entertainment') ? 'selected' : ''}}>
-						Entertainment
-					</option>
-					<option value="services" {{ (old('category') === 'services') ? 'selected' : ''}}>Services
-					</option>
-					<option value="work" {{ (old('category') === 'work') ? 'selected' : ''}}>Work</option>
-					<option value="personal" {{ (old('category') === 'personal') ? 'selected' : ''}}>Personal
-					</option>
-					<option value="other" {{ (old('category') === 'other') ? 'selected' : ''}}>Other
-					</option>
-				</select>
-			</div>
-		</form>`;
-		
-		const swalWithBootstrapButtons = Swal.mixin({
+
+	$('#addSubForm').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: 'POST',
+			url: document.getElementById('addSubForm').getAttribute('action'),
+			dataType: 'json',
+			data: $('#addSubForm').serialize(),
+			success: function(data){
+				location.reload();
+				return false;
+			},
+			error: function(data){
+				var errors = data.responseJSON;
+				for(error in errors['message']){
+					$(`#${error}_add`).addClass('is-invalid');
+					document.getElementById(`${error}_add_message`).innerHTML = errors['message'][error][0];
+				}
+				var all = ['subscription_name', 'price', 'first_date']
+				var success = all.filter(function(obj) { return !(obj in errors['message']); });
+				for(var i = 0; i < success.length; i++){
+					if($(`#${success[i]}_add`).hasClass('is-invalid'))
+					{
+						$(`#${success[i]}_add`).removeClass('is-invalid');
+						document.getElementById(`${success[i]}_add_message`).innerHTML = "";
+					}
+					
+				}
+			}
+		})
+	})
+function editSub(id){
+	$(`#editForm-${id}`).one('submit',function(e){
+		e.preventDefault();
+		$.ajax({
+			type: 'POST',
+			url: document.getElementById(`editForm-${id}`).getAttribute('action'),
+			dataType: 'json',
+			data: $(`#editForm-${id}`).serialize(),
+			success: function(data){
+				location.reload();
+				return false;
+			},
+			error: function(data){
+				var errors = data.responseJSON;
+				for(error in errors['message']){
+					$(`#${error}_${id}`).addClass('is-invalid');
+					document.getElementById(`${error}_${id}_message`).innerHTML = errors['message'][error][0];
+					console.log(document.getElementById(`${error}_${id}_message`));
+				}
+				var all = ['subscription_name', 'price', 'first_date']
+				var success = all.filter(function(obj) { return !(obj in errors['message']); });
+				for(var i = 0; i < success.length; i++){
+					if($(`#${success[i]}_${id}`).hasClass('is-invalid'))
+					{
+						$(`#${success[i]}_${id}`).removeClass('is-invalid');
+						document.getElementById(`${success[i]}_${id}_message`).innerHTML = "";
+					}
+					
+				}
+			}
+		})
+	})
+}
+function viewSub(name, price, firstDate, nextDate, endDate, frequency, category){
+	const swalWithBootstrapButtons = Swal.mixin({
 		customClass: {
-		confirmButton: 'btn btn-success z-depth-0',
-		cancelButton: 'btn btn-danger z-depth-0'
-		},
-		buttonsStyling: false
+			confirmButton: 'btn btn-primary z-depth-0',
+			},
+			buttonsStyling: false
 		})
 		
 		swalWithBootstrapButtons.fire({
-		title: 'Add Subscription',
-		html: `
-			${formCode}
-		`,
-		preConfirm: function () {
-			return new Promise(function (resolve) {
-				var invalidString = '';
-				var subName = document.getElementById('subscription_name').value;
-				var thePrice = document.getElementById('price').value;
-				var firstDate = document.getElementById('first_date').value;
-				var isDate = function(date) {
-					return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
-				}
-				if ( subName == '' ) {
-					invalidString += "A Subscription is required."
-				}
-				else if(subName.length >= 20){
-					invalidString += "Subscription name is too long."
-				}
-				if(thePrice == ''){
-					invalidString += ' A Price is required.'
-				}
-				if(firstDate == ''){
-					invalidString += ' A First Date is required.'
-				} 
-				else if(!isDate(firstDate)){
-					invalidString += " First Due Date must be a date."
-				}
-				if(isNaN(thePrice)){
-					invalidString += " Price must be a number."
-				}
-				
-				if(invalidString !== ''){
-					swal.showValidationMessage(invalidString); // Show error when validation fails.
-					swal.enableButtons();
-				}
-				else {
-				swal.resetValidationMessage(); // Reset the validation message.
-				resolve([
-                            $('#subscription_name').val(),
-                            $('#price').val(),
-                            $('#first_date').val(),
-							$('#end_date').val(),
-                        ]);
-				}
-			})
-		},
-		onOpen: function () {
-			$('#subscription_name').focus();
-		},
-		showCancelButton: true,
-		confirmButtonText: 'add <i class="fas fa-plus"></i>',
-		cancelButtonText: 'Cancel',
-		reverseButtons: true,
-		
-		}).then((result) => {
-		if (result.value) {
-			document.getElementById('addForm').submit();
-		}
+			title: `<strong>${name}</strong>`,
+			icon: 'info',
+			html:
+			'<b>Price: </b>$' + price + '<br>' +
+			'<b>First Date: </b>' +firstDate + '<br>' +
+			'<b>Next Date: </b>' +nextDate + '<br>' +
+			/* '<b>End Date: </b>' +endDate + '<br>' + */
+			'<b>Frequency: </b>' +frequency + '<br>' +
+			'<b>Category: </b>' +category,
+			showCloseButton: true,
+			focusConfirm: false,
+			confirmButtonText:
+			'OK',
 		})
-	}
-
-	function editForm(id){
-		const swalWithBootstrapButtons = Swal.mixin({
-		customClass: {
-		confirmButton: 'btn btn-success z-depth-0',
-		cancelButton: 'btn btn-danger z-depth-0'
-		},
-		buttonsStyling: false
-		})
-
-		swalWithBootstrapButtons.fire({
-		title: 'Update Subscription',
-		html: document.getElementById(`editForm-${id}`),
-		preConfirm: function () {
-			return new Promise(function (resolve) {
-			var invalidString = '';
-			var thePrice = document.getElementById(`price_${id}`).value;
-			var firstDate = document.getElementById(`first_date_${id}`).value;
-			var isDate = function(date) {
-			return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
-			}
-			if(thePrice == ''){
-				invalidString += ' A Price is required.'
-			}
-			if(firstDate == ''){
-				invalidString += ' A First Date is required.'
-			}
-			else if(!isDate(firstDate)){
-				invalidString += " First Due Date must be a date."
-			}
-			if(isNaN(thePrice)){
-				invalidString += " Price must be a number."
-			}
-
-			if(invalidString !== ''){
-				swal.showValidationMessage(invalidString); 
-				swal.enableButtons();
-			}
-			else {
-				swal.resetValidationMessage(); 
-				resolve([
-				$(`#price_${id}`).val(),
-				$(`#first_date_${id}`).val()
-				]);
-			}
-			})
-		},
-		onOpen: function () {
-			$('#price').focus();
-			
-		},
-		showCancelButton: true,
-		confirmButtonText: 'Update <i class="fas fa-edit"></i>',
-		cancelButtonText: 'Cancel',
-		reverseButtons: true,
-
-		}).then((result) => {
-		if (result.value) {
-			document.getElementById(`editForm-${id}`).submit();
-		}
-		else{
-			location.reload();
-		}
-		})
-	}
-
-	function viewSub(name, price, firstDate, nextDate, endDate, frequency, category){
-		const swalWithBootstrapButtons = Swal.mixin({
-		customClass: {
-		confirmButton: 'btn btn-primary z-depth-0',
-		},
-		buttonsStyling: false
-		})
-		
-		swalWithBootstrapButtons.fire({
-		title: `<strong>${name}</strong>`,
-		icon: 'info',
-		html:
-		'<b>Price: </b>$' + price + '<br>' +
-		'<b>First Date: </b>' +firstDate + '<br>' +
-		'<b>Next Date: </b>' +nextDate + '<br>' +
-		/* '<b>End Date: </b>' +endDate + '<br>' + */
-		'<b>Frequency: </b>' +frequency + '<br>' +
-		'<b>Category: </b>' +category,
-		showCloseButton: true,
-		focusConfirm: false,
-		confirmButtonText:
-		'OK',
-		confirmButtonAriaLabel: 'Thumbs up, great!',
-		})
-	}
-
-	function checkURL(url) {
-		return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 	}
 </script>
 

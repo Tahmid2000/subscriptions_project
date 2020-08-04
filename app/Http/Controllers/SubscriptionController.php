@@ -10,6 +10,8 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+
 /* use Acaronlex\LaravelCalendar\Facades\Calendar; */
 
 class SubscriptionController extends Controller
@@ -45,48 +47,49 @@ class SubscriptionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
-        $validator = $this->validateSubscription();
-        $endDate = request('end_date');
-        $category = request('category');
-        if ($endDate == '') {
-            $endDate = null;
+        $validator = Validator::make($request->all(), [
+            'subscription_name' => [
+                'required', 'max:40',
+                function ($attribute, $value, $fail) {
+                    $subs = Subscription::where('user_id', Auth::id());
+                    if ($subs->where('subscription_name', $value)->first()) {
+                        $fail('You already have this subscription added.');
+                    }
+                }
+            ],
+            'price' => 'required|numeric',
+            'first_date' => 'required|date',
+            'period' => 'required'
+        ], $this->messages());
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $errors = json_decode($errors);
+            return response()->json(['success' => FALSE, 'message' => $errors], 422);
         } else {
-            $endDate = Carbon::create(request('end_date'));
-        }
-        if ($category == 'Select One') {
-            $category = 'other';
-        }
-        $subscription = Subscription::firstOrCreate([
-            'user_id' => Auth::id(),
-            'subscription_name' => strtolower(request('subscription_name')),
-            'price' => request('price'),
-            'first_date' => Carbon::create(request('first_date')),
-            'next_date' => Carbon::create(request('first_date')),
-            'end_date' => $endDate,
-            'period' => request('period'),
-            'category' => $category
-        ]);
-        if ($subscription->first_date < Carbon::now()->addDays(-1))
-            $this->updateNextDate($subscription);
-        else
-            $subscription->update([
-                'next_date' => $subscription->first_date
+            $category = request('category');
+            if ($category == 'Select One') {
+                $category = 'other';
+            }
+            $subscription = Subscription::firstOrCreate([
+                'user_id' => Auth::id(),
+                'subscription_name' => strtolower(request('subscription_name')),
+                'price' => request('price'),
+                'first_date' => Carbon::create(request('first_date')),
+                'next_date' => Carbon::create(request('first_date')),
+                'period' => request('period'),
+                'category' => $category
             ]);
-        request()->session()->flash('flash_message', 'Subscription added!');
-        return redirect(route('home'));
-    }
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Subscription  $subscription
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Subscription $subscription)
-    {
+            if ($subscription->first_date < Carbon::now()->addDays(-1))
+                $this->updateNextDate($subscription);
+            else
+                $subscription->update([
+                    'next_date' => $subscription->first_date
+                ]);
+            request()->session()->flash('flash_message', 'Subscription added!');
+            return response()->json(['success' => TRUE], 200);
+        }
     }
 
     /**
@@ -109,38 +112,36 @@ class SubscriptionController extends Controller
      */
     public function update(Request $request, Subscription $subscription)
     {
-        $validator = request()->validate([
-            'subscription_name' => 'required|max:255',
-            'price' => 'required:numeric',
+        $validator = Validator::make($request->all(), [
+            'subscription_name' => 'required|max:40',
+            'price' => 'required|numeric',
             'first_date' => 'required|date',
-            'end_date' => 'nullable|date',
             'period' => 'required'
-        ]);
-        $endDate = request('end_date');
-        $category = request('category');
-        if ($endDate == '') {
-            $endDate = null;
+        ], $this->messages());
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $errors = json_decode($errors);
+            return response()->json(['success' => FALSE, 'message' => $errors], 422);
         } else {
-            $endDate = Carbon::create(request('end_date'));
-        }
-        if ($category == 'Select One') {
-            $category = 'other';
-        }
-        $subscription->update([
-            'price' => request('price'),
-            'first_date' => Carbon::create(request('first_date')),
-            'end_date' => $endDate,
-            'period' => request('period'),
-            'category' => $category
-        ]);
-        if ($subscription->first_date < Carbon::now()->addDays(-1))
-            $this->updateNextDate($subscription);
-        else
+            $category = request('category');
+            if ($category == 'Select One') {
+                $category = 'other';
+            }
             $subscription->update([
-                'next_date' => $subscription->first_date
+                'price' => request('price'),
+                'first_date' => Carbon::create(request('first_date')),
+                'period' => request('period'),
+                'category' => $category
             ]);
-        request()->session()->flash('flash_message', 'Subscription edited!');
-        return redirect(route('home'));
+            if ($subscription->first_date < Carbon::now()->addDays(-1))
+                $this->updateNextDate($subscription);
+            else
+                $subscription->update([
+                    'next_date' => $subscription->first_date
+                ]);
+            request()->session()->flash('flash_message', 'Subscription edited!');
+            return response()->json(['success' => TRUE], 200);
+        }
     }
 
     /**
@@ -237,29 +238,11 @@ class SubscriptionController extends Controller
             'next_date' => $new_date
         ]);
     }
-    public function validateSubscription()
-    {
-        return request()->validate([
-            'subscription_name' => [
-                'required', 'max:255',
-                function ($attribute, $value, $fail) {
-                    $subs = Subscription::where('user_id', Auth::id());
-                    if ($subs->where('subscription_name', $value)->first()) {
-                        $fail('You already have this subscription added.');
-                    }
-                }
-            ],
-            'price' => 'required:numeric',
-            'first_date' => 'required|date',
-            'end_date' => 'nullable|date',
-            'period' => 'required'
-        ], $this->messages());
-    }
 
     public function messages()
     {
         return [
-            'subscription_name.required' => 'A subscription is required.',
+            'subscription_name.required' => 'A subscription name is required.',
             'price.required'  => 'A price is required.',
             'first_date.required' => 'An initial date is required.',
             'period.required' => 'A frequency is required.'

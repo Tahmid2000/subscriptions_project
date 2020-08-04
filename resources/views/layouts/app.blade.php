@@ -50,6 +50,10 @@
             width: 0;
             margin-top: -32767px;
         }
+
+        nav {
+            padding-right: 0 !important;
+        }
     </style>
     @stack('css')
 </head>
