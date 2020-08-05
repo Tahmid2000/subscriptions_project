@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Notifications\SubscriptionDue;
 use Illuminate\Console\Command;
 use App\Subscription;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class cronEmail extends Command
@@ -20,7 +23,7 @@ class cronEmail extends Command
      *
      * @var string
      */
-    protected $description = 'Send emails';
+    protected $description = 'Send emails when a subscription is due.';
 
     /**
      * Create a new command instance.
@@ -39,14 +42,28 @@ class cronEmail extends Command
      */
     public function handle()
     {
-        $subscriptions = Subscription::all();
-        foreach ($subscriptions as $sub) {
-            $date = date('m/d/Y', strtotime($sub->next_date));
-            Mail::send('Html.view', ['date' => $date], function ($message) {
-                $message->from('subsort@subsort.com', 'Subsort');
-                $message->to('tahmidimran1@gmail.com', 'Tahmid Imran');
-                $message->subject('Subscription Due');
-            });
+        $users = User::all();
+        foreach ($users as $user) {
+            $subscriptions = Subscription::all()->where('user_id', $user->id)->where('next_date', Carbon::now()->format('Y-m-d'))->where('allow_notifs', 1);
+            foreach ($subscriptions as $sub) {
+                if ($sub->next_date < Carbon::now()->addDays(-1)) {
+                    $new_date = $sub->addNextDate2();
+                    $sub->update([
+                        'next_date' => $new_date
+                    ]);
+                }
+                if (Carbon::parse($sub->next_date)->format('Y-m-d') === Carbon::now()->format('Y-m-d')) {
+                    $user->notifyAt(
+                        new SubscriptionDue(['subscription' => $sub]),
+                        Carbon::now()->addMinute()
+                    );
+                } else {
+                    $user->notifyAt(
+                        new SubscriptionDue(['subscription' => $sub]),
+                        Carbon::parse($sub->next_date)
+                    );
+                }
+            }
         }
     }
 }

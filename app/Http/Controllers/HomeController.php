@@ -37,15 +37,6 @@ class HomeController extends Controller
                     'next_date' => $new_date
                 ]);
             }
-            $user = User::find(Auth::id());
-            /* $user->notifyAt(
-                new SubscriptionDue($sub),
-                Carbon::parse($sub->next_date)
-            ); */
-            /* $user->notifyAt(
-                new SubscriptionDue($sub),
-                Carbon::now()->addMinute()
-            ); */
         }
         if (request('sort')) {
             if (request('sort') === 'order') {
@@ -69,7 +60,6 @@ class HomeController extends Controller
         }
         $date = Carbon::now()->format('m/d/Y');
         $sorted = request('sort');
-
         return view('subscriptions.home', compact('subscriptions', 'sorted', 'date'));
     }
 }

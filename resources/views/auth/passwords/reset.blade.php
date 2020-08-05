@@ -1,5 +1,21 @@
 @extends('layouts.app')
+@push('css')
+<style>
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+    }
 
+    footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+</style>
+@endpush
 @section('content')
 <div class="container" style="margin-top: 150px;">
     <div class="row justify-content-center">

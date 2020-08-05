@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Acaronlex\LaravelCalendar\Calendar;
-
+use App\Notifications\SubscriptionDue;
 use App\Subscription;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -69,8 +71,12 @@ class SubscriptionController extends Controller
             return response()->json(['success' => FALSE, 'message' => $errors], 422);
         } else {
             $category = request('category');
+            $allow_val = request('allow_notifs');
             if ($category == 'Select One') {
                 $category = 'other';
+            }
+            if ($allow_val === NULL) {
+                $allow_val = 0;
             }
             $subscription = Subscription::firstOrCreate([
                 'user_id' => Auth::id(),
@@ -79,7 +85,8 @@ class SubscriptionController extends Controller
                 'first_date' => Carbon::create(request('first_date')),
                 'next_date' => Carbon::create(request('first_date')),
                 'period' => request('period'),
-                'category' => $category
+                'category' => $category,
+                'allow_notifs' => $allow_val
             ]);
             if ($subscription->first_date < Carbon::now()->addDays(-1))
                 $this->updateNextDate($subscription);
@@ -87,6 +94,13 @@ class SubscriptionController extends Controller
                 $subscription->update([
                     'next_date' => $subscription->first_date
                 ]);
+            if (Carbon::parse($subscription->next_date)->format('Y-m-d') === Carbon::now()->format('Y-m-d') && $allow_val === "1") {
+                $user = User::find(Auth::id());
+                $user->notifyAt(
+                    new SubscriptionDue(['subscription' => $subscription]),
+                    Carbon::now()->addMinute()
+                );
+            }
             request()->session()->flash('flash_message', 'Subscription added!');
             return response()->json(['success' => TRUE], 200);
         }
@@ -123,15 +137,23 @@ class SubscriptionController extends Controller
             $errors = json_decode($errors);
             return response()->json(['success' => FALSE, 'message' => $errors], 422);
         } else {
+            $user = User::find(Auth::id());
+            $initial_date = Carbon::parse($subscription->first_date)->format('Y-m-d');
+            $initial_allow = $subscription->allow_notifs;
             $category = request('category');
+            $allow_val = request('allow_notifs');
             if ($category == 'Select One') {
                 $category = 'other';
+            }
+            if ($allow_val === NULL) {
+                $allow_val = 0;
             }
             $subscription->update([
                 'price' => request('price'),
                 'first_date' => Carbon::create(request('first_date')),
                 'period' => request('period'),
-                'category' => $category
+                'category' => $category,
+                'allow_notifs' => $allow_val
             ]);
             if ($subscription->first_date < Carbon::now()->addDays(-1))
                 $this->updateNextDate($subscription);
@@ -139,6 +161,24 @@ class SubscriptionController extends Controller
                 $subscription->update([
                     'next_date' => $subscription->first_date
                 ]);
+            if ($initial_date !== Carbon::parse($subscription->first_date)->format('Y-m-d')) {
+                $mail = true;
+            } else
+                $mail = false;
+            if ($allow_val === "1") {
+                if ($initial_allow == 0) {
+                    $new_allow = true;
+                } else {
+                    $new_allow = false;
+                }
+            } else
+                $new_allow = false;
+            if (($mail === true || $new_allow === true) && (Carbon::parse($subscription->next_date)->format('Y-m-d') === Carbon::now()->format('Y-m-d')) && ($allow_val === "1")) {
+                $user->notifyAt(
+                    new SubscriptionDue(['subscription' => $subscription]),
+                    Carbon::now()->addMinute()
+                );
+            }
             request()->session()->flash('flash_message', 'Subscription edited!');
             return response()->json(['success' => TRUE], 200);
         }

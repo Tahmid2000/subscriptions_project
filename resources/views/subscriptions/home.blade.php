@@ -256,6 +256,16 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 								</p>
 							</span>
 						</div>
+						<div class="form-group">
+							<input type="checkbox" name="allow_notifs" value="1"
+								{{($sub->allow_notifs == 1) ? 'checked':''}}>
+							<label class="my-1 mr-2" for="period">Send me an email when subscription is due</label>
+
+							<span class="invalid-feedback" role="alert">
+								<p style="color: red; margin-bottom: -15px;" id="category_add_message">
+								</p>
+							</span>
+						</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
@@ -372,6 +382,15 @@ background-image: linear-gradient(315deg, #42378f 0%, #f53844 74%); margin-top: 
 							<option value="other" {{ (old('category') === 'other') ? 'selected' : ''}}>Other
 							</option>
 						</select>
+						<span class="invalid-feedback" role="alert">
+							<p style="color: red; margin-bottom: -15px;" id="category_add_message">
+							</p>
+						</span>
+					</div>
+					<div class="form-group">
+						<input type="checkbox" name="allow_notifs" checked value="1">
+						<label class="my-1 mr-2" for="period">Send me an email when subscription is due</label>
+
 						<span class="invalid-feedback" role="alert">
 							<p style="color: red; margin-bottom: -15px;" id="category_add_message">
 							</p>
@@ -500,7 +519,6 @@ function viewSub(name, price, firstDate, nextDate, endDate, frequency, category)
 			'<b>Price: </b>$' + price + '<br>' +
 			'<b>First Date: </b>' +firstDate + '<br>' +
 			'<b>Next Date: </b>' +nextDate + '<br>' +
-			/* '<b>End Date: </b>' +endDate + '<br>' + */
 			'<b>Frequency: </b>' +frequency + '<br>' +
 			'<b>Category: </b>' +category,
 			showCloseButton: true,

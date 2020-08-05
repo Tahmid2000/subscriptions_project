@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model implements \Acaronlex\LaravelCalendar\Event
 {
-    protected $fillable = ['subscription_name', 'price', 'first_date', 'next_date', 'period', 'user_id', 'category', 'end_date'];
+    protected $fillable = ['subscription_name', 'price', 'first_date', 'next_date', 'period', 'user_id', 'category', 'allow_notifs'];
     public function member()
     {
         return $this->belongsTo(User::class, 'user_id');

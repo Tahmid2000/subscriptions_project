@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Subscription;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -17,9 +18,10 @@ class SubscriptionDue extends Notification
      *
      * @return void
      */
-    public function __construct()
+    protected $subscription;
+    public function __construct(array $subscription)
     {
-        //
+        $this->subscription = $subscription;
     }
 
     /**
@@ -33,18 +35,30 @@ class SubscriptionDue extends Notification
         return ['mail'];
     }
 
+    public function shouldInterrupt($notifiable)
+    {
+        $update = Subscription::find($this->subscription['subscription']->id);
+        if ($update === NULL) {
+            return true;
+        }
+        if ($update->allow_notif == 0) {
+            return true;
+        }
+        return Carbon::parse($update->next_date)->format('Y-m-d') !== Carbon::now()->format('Y-m-d');
+    }
     /**
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail(Subscription $notifiable)
+    public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->line('Your ' . $notifiable->subscription_name . ' subscription is due today!')
-            ->action('Subsort', url('/'))
-            ->line('Thank you for using our app!');
+            ->line('Your ' . ucwords($this->subscription['subscription']->subscription_name) . ' subscription is due today!')
+            ->line('The subscription is $' . number_format($this->subscription['subscription']->price, 2) . '.')
+            ->action('Subsort', url('https://subsort.co'))
+            ->line('Thank you for using our website!');
     }
 
     /**
