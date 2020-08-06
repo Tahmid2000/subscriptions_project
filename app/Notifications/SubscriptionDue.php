@@ -58,6 +58,7 @@ class SubscriptionDue extends Notification
             ->line('Your ' . ucwords($this->subscription['subscription']->subscription_name) . ' subscription is due today!')
             ->line('The subscription is $' . number_format($this->subscription['subscription']->price, 2) . '.')
             ->action('Subsort', url('https://subsort.co'))
+            ->line('If you would like to stop receiving notifications for this subscription, please visit Subsort.')
             ->line('Thank you for using our website!');
     }
 
