@@ -55,12 +55,12 @@ class cronEmail extends Command
                 if (Carbon::parse($sub->next_date)->format('Y-m-d') === Carbon::now()->format('Y-m-d')) {
                     $user->notifyAt(
                         new SubscriptionDue(['subscription' => $sub]),
-                        Carbon::now()->addMinute()
+                        Carbon::now()->addHours(11)
                     );
                 } else {
                     $user->notifyAt(
                         new SubscriptionDue(['subscription' => $sub]),
-                        Carbon::parse($sub->next_date)
+                        Carbon::parse($sub->next_date)->addHours(11)
                     );
                 }
             }

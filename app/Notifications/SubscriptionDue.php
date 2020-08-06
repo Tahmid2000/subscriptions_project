@@ -41,7 +41,7 @@ class SubscriptionDue extends Notification
         if ($update === NULL) {
             return true;
         }
-        if ($update->allow_notif == 0) {
+        if ($update->allow_notifs == 0) {
             return true;
         }
         return Carbon::parse($update->next_date)->format('Y-m-d') !== Carbon::now()->format('Y-m-d');
