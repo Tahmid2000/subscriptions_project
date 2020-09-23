@@ -44,7 +44,7 @@ class SubscriptionDue extends Notification
         if ($update->allow_notifs == 0) {
             return true;
         }
-        return Carbon::parse($update->next_date)->format('Y-m-d') !== Carbon::now()->format('Y-m-d');
+        return Carbon::parse($update->next_date)->format('Y-m-d') !== Carbon::now()->addDay()->format('Y-m-d');
     }
     /**
      * Get the mail representation of the notification.
@@ -55,7 +55,7 @@ class SubscriptionDue extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->line('Your ' . ucwords($this->subscription['subscription']->subscription_name) . ' subscription is due today!')
+            ->line('Your ' . ucwords($this->subscription['subscription']->subscription_name) . ' subscription is due tomorrow!')
             ->line('The subscription is $' . number_format($this->subscription['subscription']->price, 2) . '.')
             ->action('Subsort', url('https://subsort.co'))
             ->line('If you would like to stop receiving notifications for this subscription, please visit Subsort.')

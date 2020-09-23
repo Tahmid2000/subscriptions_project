@@ -94,7 +94,7 @@ class SubscriptionController extends Controller
                 $subscription->update([
                     'next_date' => $subscription->first_date
                 ]);
-            if (Carbon::parse($subscription->next_date)->format('Y-m-d') === Carbon::now()->format('Y-m-d') && $allow_val === "1") {
+            if (Carbon::parse($subscription->next_date)->format('Y-m-d') === Carbon::now()->addDay()->format('Y-m-d') && $allow_val === "1") {
                 $user = User::find(Auth::id());
                 $user->notifyAt(
                     new SubscriptionDue(['subscription' => $subscription]),
@@ -173,7 +173,7 @@ class SubscriptionController extends Controller
                 }
             } else
                 $new_allow = false;
-            if (($mail === true || $new_allow === true) && (Carbon::parse($subscription->next_date)->format('Y-m-d') === Carbon::now()->format('Y-m-d')) && ($allow_val === "1")) {
+            if (($mail === true || $new_allow === true) && (Carbon::parse($subscription->next_date)->format('Y-m-d') === Carbon::now()->addDay()->format('Y-m-d')) && ($allow_val === "1")) {
                 $user->notifyAt(
                     new SubscriptionDue(['subscription' => $subscription]),
                     Carbon::now()->addMinute()
